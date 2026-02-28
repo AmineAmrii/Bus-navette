@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>🚌 Bus Navette</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --card2: #20243a;
+    --accent: #4f8ef7;
+    --green: #3dd68c;
+    --red: #f7614f;
+    --orange: #f7a14f;
+    --text: #f0f2ff;
+    --muted: #7b82a0;
+    --border: rgba(255,255,255,0.07);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100dvh; padding-bottom: 40px; }
+
+  .header {
+    background: linear-gradient(135deg, #1a1d27 0%, #0f1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 20px 14px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-top { display:flex; align-items:center; justify-content:space-between; margin-bottom: 14px; }
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.25rem; }
+  .logo span { color: var(--accent); }
+  .date-badge { background: var(--card2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 13px; font-size: 0.75rem; color: var(--muted); }
+
+  .route-bar {
+    background: var(--card2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 10px 14px; display: flex; align-items: center; justify-content: center;
+    gap: 8px; font-size: 0.8rem; font-family: 'Syne', sans-serif; font-weight: 600; margin-bottom: 12px;
+  }
+  .route-stop { color: var(--text); }
+  .route-arrow { color: var(--muted); font-size: 0.7rem; }
+  .route-stop.work { color: var(--accent); }
+
+  .capacity-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cap-card { background: var(--card2); border: 1px solid var(--border); border-radius: 14px; padding: 11px 14px; }
+  .cap-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .cap-bar { height: 5px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; margin-bottom: 5px; }
+  .cap-fill { height: 100%; border-radius: 99px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+  .cap-fill.ok { background: linear-gradient(90deg, var(--green), #6df7b0); }
+  .cap-fill.warn { background: linear-gradient(90deg, #f7c14f, var(--orange)); }
+  .cap-fill.full { background: linear-gradient(90deg, var(--red), #f7914f); }
+  .cap-numbers { font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; }
+  .cap-numbers small { font-size: 0.68rem; color: var(--muted); font-family: 'DM Sans', sans-serif; font-weight: 400; }
+
+  .main { padding: 18px 16px; max-width: 480px; margin: 0 auto; }
+
+  .tabs { display: flex; gap: 8px; background: var(--card); border-radius: 14px; padding: 5px; margin-bottom: 18px; border: 1px solid var(--border); }
+  .tab { flex: 1; padding: 10px 6px; border: none; background: transparent; color: var(--muted); font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+  .tab.active { background: var(--accent); color: #fff; box-shadow: 0 4px 16px rgba(79,142,247,0.3); }
+
+  .notice { background: rgba(79,142,247,0.08); border: 1px solid rgba(79,142,247,0.2); border-radius: 12px; padding: 11px 14px; font-size: 0.78rem; color: var(--accent); margin-bottom: 16px; text-align: center; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); display: inline-block; margin-right: 5px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .section-card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px; margin-bottom: 14px; }
+  .section-label { font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 12px; }
+
+  .name-input { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 13px 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 1rem; outline: none; transition: border-color 0.2s; }
+  .name-input:focus { border-color: var(--accent); }
+  .name-input::placeholder { color: var(--muted); }
+
+  .station-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .station-btn { padding: 14px 10px; border: 1.5px solid var(--border); border-radius: 13px; background: var(--bg); color: var(--muted); font-family: 'Syne', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: all 0.2s; text-align: center; }
+  .station-btn .station-icon { font-size: 1.4rem; display: block; margin-bottom: 5px; }
+  .station-btn.selected-bizerte { border-color: var(--orange); background: rgba(247,161,79,0.12); color: var(--orange); box-shadow: 0 4px 16px rgba(247,161,79,0.2); }
+  .station-btn.selected-elalia { border-color: var(--green); background: rgba(61,214,140,0.12); color: var(--green); box-shadow: 0 4px 16px rgba(61,214,140,0.2); }
+
+  .trip-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .trip-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+  .trip-icon.aller { background: rgba(79,142,247,0.15); }
+  .trip-icon.retour { background: rgba(247,97,79,0.15); }
+  .trip-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; }
+  .trip-route { font-size: 0.72rem; color: var(--muted); }
+
+  .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .btn-trip { padding: 13px; border: 1.5px solid transparent; border-radius: 13px; font-family: 'Syne', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .btn-trip.reserve { background: rgba(61,214,140,0.1); border-color: rgba(61,214,140,0.25); color: var(--green); }
+  .btn-trip.reserve.selected { background: var(--green); color: #0f1117; box-shadow: 0 6px 20px rgba(61,214,140,0.3); }
+  .btn-trip.annuler { background: rgba(247,97,79,0.1); border-color: rgba(247,97,79,0.2); color: var(--red); }
+  .btn-trip.annuler.selected { background: var(--red); color: #fff; box-shadow: 0 6px 20px rgba(247,97,79,0.3); }
+
+  .btn-submit { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent), #6fa8f9); border: none; border-radius: 14px; color: #fff; font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 4px; transition: all 0.2s; box-shadow: 0 6px 20px rgba(79,142,247,0.3); }
+  .btn-submit:active { transform: scale(0.98); }
+
+  .list-section-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+  .list-badge { background: var(--card2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 0.72rem; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+
+  .station-group { margin-bottom: 12px; }
+  .station-group-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .station-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .station-dot.bizerte { background: var(--orange); }
+  .station-dot.elalia { background: var(--green); }
+  .station-group-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; }
+
+  .person-row { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 11px 14px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+  .person-name { font-weight: 500; font-size: 0.88rem; }
+  .trip-pill { border-radius: 6px; padding: 3px 8px; font-size: 0.68rem; font-weight: 600; font-family: 'Syne', sans-serif; }
+  .trip-pill.aller { background: rgba(79,142,247,0.15); color: var(--accent); }
+  .trip-pill.retour { background: rgba(247,97,79,0.15); color: var(--red); }
+
+  .segment-divider { display: flex; align-items: center; gap: 10px; margin: 18px 0 12px; }
+  .segment-divider span { font-family: 'Syne', sans-serif; font-size: 0.78rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
+  .segment-divider::before, .segment-divider::after { content:''; flex:1; height:1px; background: var(--border); }
+
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 0.88rem; }
+  .empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+  .loading { text-align: center; padding: 30px; color: var(--muted); font-size: 0.88rem; }
+  .spinner { width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 13px 22px; font-size: 0.88rem; font-weight: 500; box-shadow: 0 10px 40px rgba(0,0,0,0.4); z-index: 999; transition: transform 0.35s cubic-bezier(.4,0,.2,1); white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: rgba(61,214,140,0.4); color: var(--green); }
+  .toast.error { border-color: rgba(247,97,79,0.4); color: var(--red); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo">🚌 Bus<span>Navette</span></div>
+    <div class="date-badge" id="dateDisplay"></div>
+  </div>
+  <div class="route-bar">
+    <span class="route-stop">📍 Bizerte</span>
+    <span class="route-arrow">→</span>
+    <span class="route-stop">📍 El Alia</span>
+    <span class="route-arrow">→</span>
+    <span class="route-stop work">🏢 Tunis</span>
+  </div>
+  <div class="capacity-row">
+    <div class="cap-card">
+      <div class="cap-label">🌅 Aller</div>
+      <div class="cap-bar"><div class="cap-fill ok" id="barAller" style="width:0%"></div></div>
+      <div class="cap-numbers"><span id="countAller">0</span><small>/29 places</small></div>
+    </div>
+    <div class="cap-card">
+      <div class="cap-label">🌆 Retour</div>
+      <div class="cap-bar"><div class="cap-fill ok" id="barRetour" style="width:0%"></div></div>
+      <div class="cap-numbers"><span id="countRetour">0</span><small>/29 places</small></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('reserver')">✏️ Réserver</button>
+    <button class="tab" onclick="switchTab('liste')">👥 Liste du jour</button>
+  </div>
+
+  <div id="tab-reserver">
+    <div class="notice"><span class="dot"></span>Réservations ouvertes à partir de 19h</div>
+
+    <div class="section-card">
+      <div class="section-label">Votre nom</div>
+      <input type="text" class="name-input" id="nameInput" placeholder="Nom et Prénom" maxlength="50" autocomplete="name">
+    </div>
+
+    <div class="section-card">
+      <div class="section-label">Votre station de départ</div>
+      <div class="station-grid">
+        <button class="station-btn" id="btn-bizerte" onclick="selectStation('Bizerte')">
+          <span class="station-icon">🟠</span>Bizerte
+        </button>
+        <button class="station-btn" id="btn-elalia" onclick="selectStation('El Alia')">
+          <span class="station-icon">🟢</span>El Alia
+        </button>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="trip-header">
+        <div class="trip-icon aller">🌅</div>
+        <div>
+          <div class="trip-title">Trajet Aller</div>
+          <div class="trip-route">Bizerte → El Alia → Tunis</div>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn-trip reserve" id="btn-aller-oui" onclick="selectTrip('aller','oui')">✓ Je réserve</button>
+        <button class="btn-trip annuler" id="btn-aller-non" onclick="selectTrip('aller','non')">✕ J'annule</button>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="trip-header">
+        <div class="trip-icon retour">🌆</div>
+        <div>
+          <div class="trip-title">Trajet Retour</div>
+          <div class="trip-route">Tunis → El Alia → Bizerte</div>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn-trip reserve" id="btn-retour-oui" onclick="selectTrip('retour','oui')">✓ Je réserve</button>
+        <button class="btn-trip annuler" id="btn-retour-non" onclick="selectTrip('retour','non')">✕ J'annule</button>
+      </div>
+    </div>
+
+    <button class="btn-submit" onclick="submitReservation()">Confirmer ma réservation</button>
+  </div>
+
+  <div id="tab-liste" style="display:none">
+    <div id="listContent"><div class="loading"><div class="spinner"></div>Chargement...</div></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAM6or5v-KbDULxs7JsT_2vWs5pBmvB7nE",
+    authDomain: "reservation-bus-bizerte-alia.firebaseapp.com",
+    databaseURL: "https://reservation-bus-bizerte-alia-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "reservation-bus-bizerte-alia",
+    storageBucket: "reservation-bus-bizerte-alia.firebasestorage.app",
+    messagingSenderId: "166885172887",
+    appId: "1:166885172887:web:aa3e62bf6aa84f56206bd2"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const MAX = 29;
+  let choix = { aller: null, retour: null };
+  let selectedStation = null;
+
+  const today = new Date();
+  const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+  const jours = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const mois = ['janv','févr','mars','avr','mai','juin','juil','août','sept','oct','nov','déc'];
+  document.getElementById('dateDisplay').textContent =
+    jours[today.getDay()] + ' ' + today.getDate() + ' ' + mois[today.getMonth()];
+
+  const dateKey = tomorrow.toISOString().split('T')[0].replace(/-/g, '_');
+  const dbRef = ref(db, `reservations/${dateKey}`);
+
+  // Realtime listener pour les compteurs
+  onValue(dbRef, (snapshot) => {
+    const data = snapshot.val() || {};
+    updateCapacity(data);
+    if (document.getElementById('tab-liste').style.display !== 'none') {
+      renderList(data);
+    }
+  });
+
+  function updateCapacity(data) {
+    let cA = 0, cR = 0;
+    Object.values(data).forEach(p => {
+      if (p.aller === 'oui') cA++;
+      if (p.retour === 'oui') cR++;
+    });
+    document.getElementById('countAller').textContent = cA;
+    document.getElementById('countRetour').textContent = cR;
+    setBar('barAller', cA);
+    setBar('barRetour', cR);
+  }
+
+  function setBar(id, count) {
+    const pct = Math.min(100, (count / MAX) * 100);
+    const el = document.getElementById(id);
+    el.style.width = pct + '%';
+    el.className = 'cap-fill ' + (pct >= 100 ? 'full' : pct >= 75 ? 'warn' : 'ok');
+  }
+
+  window.switchTab = function(tab) {
+    document.querySelectorAll('.tab').forEach((t, i) =>
+      t.classList.toggle('active', (i === 0 && tab === 'reserver') || (i === 1 && tab === 'liste')));
+    document.getElementById('tab-reserver').style.display = tab === 'reserver' ? 'block' : 'none';
+    document.getElementById('tab-liste').style.display = tab === 'liste' ? 'block' : 'none';
+    if (tab === 'liste') get(dbRef).then(snap => renderList(snap.val() || {}));
+  };
+
+  window.selectStation = function(station) {
+    selectedStation = station;
+    document.getElementById('btn-bizerte').className = 'station-btn' + (station === 'Bizerte' ? ' selected-bizerte' : '');
+    document.getElementById('btn-elalia').className = 'station-btn' + (station === 'El Alia' ? ' selected-elalia' : '');
+    // Save preference
+    const saved = JSON.parse(localStorage.getItem('busnavette_user') || '{}');
+    localStorage.setItem('busnavette_user', JSON.stringify({ ...saved, station }));
+  };
+
+  window.selectTrip = function(trip, val) {
+    choix[trip] = val;
+    ['oui', 'non'].forEach(v => {
+      document.getElementById(`btn-${trip}-${v}`).classList.toggle('selected', v === val);
+    });
+  };
+
+  window.submitReservation = async function() {
+    const name = document.getElementById('nameInput').value.trim();
+    if (!name) { showToast('Entrez votre nom et prénom', 'error'); return; }
+    if (!selectedStation) { showToast('Choisissez votre station', 'error'); return; }
+    if (!choix.aller && !choix.retour) { showToast('Choisissez au moins un trajet', 'error'); return; }
+
+    const snap = await get(dbRef);
+    const data = snap.val() || {};
+    const key = name.replace(/\s+/g, '_').toLowerCase();
+    let cA = 0, cR = 0;
+    Object.entries(data).forEach(([k, p]) => {
+      if (k !== key) {
+        if (p.aller === 'oui') cA++;
+        if (p.retour === 'oui') cR++;
+      }
+    });
+
+    if (choix.aller === 'oui' && cA >= MAX) { showToast('❌ Aller complet (29/29)', 'error'); return; }
+    if (choix.retour === 'oui' && cR >= MAX) { showToast('❌ Retour complet (29/29)', 'error'); return; }
+
+    await set(ref(db, `reservations/${dateKey}/${key}`), {
+      nom: name,
+      station: selectedStation,
+      aller: choix.aller || 'non',
+      retour: choix.retour || 'non',
+      ts: Date.now()
+    });
+
+    // Save name preference
+    const saved = JSON.parse(localStorage.getItem('busnavette_user') || '{}');
+    localStorage.setItem('busnavette_user', JSON.stringify({ ...saved, name }));
+
+    const msg = choix.aller === 'oui' && choix.retour === 'oui' ? '✅ Aller + Retour réservés !'
+      : choix.aller === 'oui' ? '✅ Aller réservé !'
+      : choix.retour === 'oui' ? '✅ Retour réservé !'
+      : '✅ Annulation enregistrée';
+    showToast(msg, 'success');
+  };
+
+  function renderList(data) {
+    const entries = Object.values(data).filter(p => p.aller === 'oui' || p.retour === 'oui');
+    if (entries.length === 0) {
+      document.getElementById('listContent').innerHTML =
+        `<div class="empty-state"><div class="empty-icon">🚌</div>Aucune réservation pour demain encore</div>`;
+      return;
+    }
+
+    const allers = entries.filter(p => p.aller === 'oui');
+    const retours = entries.filter(p => p.retour === 'oui');
+    let html = '';
+
+    if (allers.length) {
+      html += `<div class="list-section-title">🌅 Aller <span class="list-badge">${allers.length}/29</span></div>`;
+      ['Bizerte', 'El Alia'].forEach(station => {
+        const group = allers.filter(p => p.station === station);
+        if (!group.length) return;
+        const cls = station === 'Bizerte' ? 'bizerte' : 'elalia';
+        html += `<div class="station-group">
+          <div class="station-group-header"><div class="station-dot ${cls}"></div><div class="station-group-name">📍 ${station} (${group.length})</div></div>`;
+        group.forEach(p => html += `<div class="person-row"><span class="person-name">${p.nom}</span><span class="trip-pill aller">Aller</span></div>`);
+        html += '</div>';
+      });
+    }
+
+    if (retours.length) {
+      html += `<div class="segment-divider"><span>🌆 Retour • ${retours.length}/29</span></div>`;
+      // Retour : El Alia d'abord (premier arrêt au retour)
+      ['El Alia', 'Bizerte'].forEach(station => {
+        const group = retours.filter(p => p.station === station);
+        if (!group.length) return;
+        const cls = station === 'Bizerte' ? 'bizerte' : 'elalia';
+        html += `<div class="station-group">
+          <div class="station-group-header"><div class="station-dot ${cls}"></div><div class="station-group-name">📍 ${station} (${group.length})</div></div>`;
+        group.forEach(p => html += `<div class="person-row"><span class="person-name">${p.nom}</span><span class="trip-pill retour">Retour</span></div>`);
+        html += '</div>';
+      });
+    }
+
+    document.getElementById('listContent').innerHTML = html;
+  }
+
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = `toast ${type}`;
+    setTimeout(() => t.classList.add('show'), 10);
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // Restore saved preferences
+  try {
+    const saved = JSON.parse(localStorage.getItem('busnavette_user') || '{}');
+    if (saved.name) document.getElementById('nameInput').value = saved.name;
+    if (saved.station) window.selectStation(saved.station);
+  } catch(e) {}
+</script>
+</body>
+</html>
