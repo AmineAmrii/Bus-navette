@@ -4,310 +4,489 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>🚌 Bus Navette</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:#0f1117; --card:#1a1d27; --card2:#20243a;
-    --accent:#4f8ef7; --green:#3dd68c; --red:#f7614f;
-    --orange:#f7a14f; --purple:#a78bfa; --text:#f0f2ff;
-    --muted:#7b82a0; --border:rgba(255,255,255,0.07);
-  }
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100dvh;}
+:root {
+  --bg: #0b0e18;
+  --card: #141827;
+  --card2: #1c2235;
+  --accent: #4f8ef7;
+  --green: #3dd68c;
+  --red: #f7614f;
+  --orange: #f7a14f;
+  --purple: #a78bfa;
+  --text: #eef0ff;
+  --muted: #6b7494;
+  --border: rgba(255,255,255,0.06);
+  --radius: 16px;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100dvh; }
 
-  /* AUTH */
-  .auth-screen{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
-  .auth-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.9rem;margin-bottom:4px;}
-  .auth-logo span{color:var(--accent);}
-  .auth-sub{font-size:0.82rem;color:var(--muted);margin-bottom:28px;text-align:center;}
-  .auth-card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:24px;width:100%;max-width:360px;}
-  .auth-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;margin-bottom:4px;}
-  .auth-desc{font-size:0.76rem;color:var(--muted);margin-bottom:18px;line-height:1.5;}
-  .field{margin-bottom:11px;}
-  .field label{font-size:0.7rem;font-family:'Syne',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);display:block;margin-bottom:5px;}
-  .field input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:11px;padding:11px 13px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.93rem;outline:none;transition:border-color 0.2s;}
-  .field input:focus{border-color:var(--accent);}
-  .field input::placeholder{color:var(--muted);}
-  .btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),#6fa8f9);border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:0.93rem;font-weight:700;cursor:pointer;transition:all 0.2s;box-shadow:0 5px 18px rgba(79,142,247,0.3);margin-top:4px;}
-  .btn-primary:active{transform:scale(0.98);}
-  .btn-secondary{width:100%;padding:11px;background:transparent;border:1.5px solid var(--border);border-radius:12px;color:var(--muted);font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;margin-top:8px;transition:all 0.2s;}
-  .btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
-  .auth-toggle{text-align:center;margin-top:14px;font-size:0.78rem;color:var(--muted);}
-  .auth-toggle a{color:var(--accent);cursor:pointer;font-weight:600;}
-  .err-msg{background:rgba(247,97,79,0.1);border:1px solid rgba(247,97,79,0.3);color:var(--red);border-radius:9px;padding:9px 13px;font-size:0.78rem;margin-bottom:11px;display:none;}
+/* ═══════════ AUTH ═══════════ */
+.auth-wrap {
+  min-height:100dvh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; padding:24px 20px;
+}
+.auth-brand {
+  text-align:center; margin-bottom:32px;
+}
+.auth-brand .logo-big {
+  font-family:'Syne',sans-serif; font-weight:800; font-size:2rem; letter-spacing:-0.02em;
+}
+.auth-brand .logo-big span { color:var(--accent); }
+.auth-brand p { font-size:0.82rem; color:var(--muted); margin-top:4px; }
 
-  /* APP */
-  #appScreen{display:none;padding-bottom:44px;}
+.auth-box {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:22px; padding:26px 22px;
+  width:100%; max-width:380px;
+}
+.auth-box h2 { font-family:'Syne',sans-serif; font-weight:800; font-size:1.15rem; margin-bottom:6px; }
+.auth-box .sub { font-size:0.78rem; color:var(--muted); margin-bottom:20px; line-height:1.5; }
 
-  /* HEADER */
-  .header{background:linear-gradient(135deg,#1a1d27,#0f1117);border-bottom:1px solid var(--border);padding:13px 16px;position:sticky;top:0;z-index:100;}
-  .header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;}
-  .header-left{display:flex;align-items:center;gap:9px;}
-  .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;}
-  .logo span{color:var(--accent);}
-  .occ-badge{display:flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:4px 9px;}
-  .occ-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
-  .occ-num{font-family:'Syne',sans-serif;font-weight:800;font-size:0.9rem;}
-  .occ-lbl{font-size:0.62rem;color:var(--muted);}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
-  .header-right{display:flex;align-items:center;gap:7px;}
-  .user-pill{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:4px 11px;font-size:0.7rem;color:var(--muted);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .role-pill{border-radius:6px;padding:3px 8px;font-size:0.62rem;font-family:'Syne',sans-serif;font-weight:700;}
-  .role-pill.superadmin{background:rgba(167,139,250,0.15);color:var(--purple);}
-  .role-pill.admin{background:rgba(247,161,79,0.15);color:var(--orange);}
-  .role-pill.member{background:rgba(61,214,140,0.15);color:var(--green);}
-  .btn-logout{background:transparent;border:1px solid var(--border);border-radius:7px;padding:4px 8px;color:var(--muted);font-size:0.72rem;cursor:pointer;}
-  .btn-logout:hover{border-color:var(--red);color:var(--red);}
-  .route-bar{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:8px 13px;display:flex;align-items:center;justify-content:center;gap:7px;font-size:0.75rem;font-family:'Syne',sans-serif;font-weight:600;margin-bottom:10px;}
-  .rs{color:var(--text);} .ra{color:var(--muted);font-size:0.65rem;} .rw{color:var(--accent);}
-  .cap-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
-  .cap-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:10px 13px;}
-  .cap-lbl{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;}
-  .cap-bar{height:4px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;margin-bottom:4px;}
-  .cap-fill{height:100%;border-radius:99px;transition:width 0.5s cubic-bezier(.4,0,.2,1);}
-  .cap-fill.ok{background:linear-gradient(90deg,var(--green),#6df7b0);}
-  .cap-fill.warn{background:linear-gradient(90deg,#f7c14f,var(--orange));}
-  .cap-fill.full{background:linear-gradient(90deg,var(--red),#f7914f);}
-  .cap-nums{font-family:'Syne',sans-serif;font-size:0.88rem;font-weight:700;}
-  .cap-nums small{font-size:0.65rem;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:400;}
+.field { margin-bottom:13px; }
+.field label { display:block; font-size:0.7rem; font-family:'Syne',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin-bottom:6px; }
+.field input {
+  width:100%; background:var(--bg); border:1.5px solid var(--border);
+  border-radius:12px; padding:13px 15px; color:var(--text);
+  font-family:'DM Sans',sans-serif; font-size:0.95rem; outline:none; transition:border-color 0.2s;
+}
+.field input:focus { border-color:var(--accent); }
+.field input::placeholder { color:var(--muted); }
 
-  /* MAIN */
-  .main{padding:14px;max-width:480px;margin:0 auto;}
-  .tabs{display:flex;gap:6px;background:var(--card);border-radius:12px;padding:4px;margin-bottom:14px;border:1px solid var(--border);}
-  .tab{flex:1;padding:9px 4px;border:none;background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:600;border-radius:9px;cursor:pointer;transition:all 0.2s;}
-  .tab.active{background:var(--accent);color:#fff;box-shadow:0 3px 12px rgba(79,142,247,0.3);}
-  .tab.t-admin.active{background:var(--orange);box-shadow:0 3px 12px rgba(247,161,79,0.3);}
-  .tab.t-super.active{background:var(--purple);box-shadow:0 3px 12px rgba(167,139,250,0.3);}
+.btn-main {
+  width:100%; padding:14px; background:linear-gradient(135deg,var(--accent),#6fa8f9);
+  border:none; border-radius:12px; color:#fff; font-family:'Syne',sans-serif;
+  font-size:0.95rem; font-weight:700; cursor:pointer; margin-top:6px;
+  box-shadow:0 6px 20px rgba(79,142,247,0.3); transition:transform 0.15s;
+}
+.btn-main:active { transform:scale(0.98); }
+.btn-ghost {
+  width:100%; padding:12px; background:transparent; border:1.5px solid var(--border);
+  border-radius:12px; color:var(--muted); font-family:'Syne',sans-serif;
+  font-size:0.88rem; font-weight:600; cursor:pointer; margin-top:9px; transition:all 0.2s;
+}
+.btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+.auth-link { text-align:center; margin-top:16px; font-size:0.8rem; color:var(--muted); }
+.auth-link a { color:var(--accent); cursor:pointer; font-weight:600; }
+.err {
+  background:rgba(247,97,79,0.1); border:1px solid rgba(247,97,79,0.25);
+  color:var(--red); border-radius:10px; padding:10px 14px;
+  font-size:0.78rem; margin-bottom:13px; display:none;
+}
 
-  .notice{background:rgba(79,142,247,0.08);border:1px solid rgba(79,142,247,0.2);border-radius:10px;padding:9px 13px;font-size:0.74rem;color:var(--accent);margin-bottom:13px;text-align:center;}
-  .sc{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:15px;margin-bottom:11px;}
-  .slbl{font-family:'Syne',sans-serif;font-size:0.69rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:9px;}
-  .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
-  .sbtn{padding:12px 9px;border:1.5px solid var(--border);border-radius:11px;background:var(--bg);color:var(--muted);font-family:'Syne',sans-serif;font-size:0.84rem;font-weight:700;cursor:pointer;transition:all 0.2s;text-align:center;}
-  .sbtn .si{font-size:1.2rem;display:block;margin-bottom:3px;}
-  .sbtn.sb{border-color:var(--orange);background:rgba(247,161,79,0.12);color:var(--orange);box-shadow:0 3px 12px rgba(247,161,79,0.2);}
-  .sbtn.se{border-color:var(--green);background:rgba(61,214,140,0.12);color:var(--green);box-shadow:0 3px 12px rgba(61,214,140,0.2);}
-  .th{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
-  .ti{width:33px;height:33px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;}
-  .ti.al{background:rgba(79,142,247,0.15);}
-  .ti.re{background:rgba(247,97,79,0.15);}
-  .tt{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;}
-  .tr{font-size:0.69rem;color:var(--muted);}
-  .bg{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
-  .bt{padding:12px;border:1.5px solid transparent;border-radius:11px;font-family:'Syne',sans-serif;font-size:0.84rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
-  .bt.res{background:rgba(61,214,140,0.1);border-color:rgba(61,214,140,0.25);color:var(--green);}
-  .bt.res.sel{background:var(--green);color:#0f1117;box-shadow:0 4px 16px rgba(61,214,140,0.3);}
-  .bt.ann{background:rgba(247,97,79,0.1);border-color:rgba(247,97,79,0.2);color:var(--red);}
-  .bt.ann.sel{background:var(--red);color:#fff;box-shadow:0 4px 16px rgba(247,97,79,0.3);}
-  .bsub{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),#6fa8f9);border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:0.93rem;font-weight:700;cursor:pointer;margin-top:4px;transition:all 0.2s;box-shadow:0 5px 16px rgba(79,142,247,0.3);}
-  .bsub:active{transform:scale(0.98);}
+/* ═══════════ APP ═══════════ */
+#app { display:none; padding-bottom:48px; }
 
-  /* WAIT LIST */
-  .wait-banner{background:rgba(247,161,79,0.08);border:1px solid rgba(247,161,79,0.25);border-radius:10px;padding:10px 13px;font-size:0.75rem;color:var(--orange);margin-bottom:13px;}
-  .wait-banner strong{font-family:'Syne',sans-serif;}
+/* HEADER */
+.hdr {
+  background:linear-gradient(180deg, #141827 0%, #0f1320 100%);
+  border-bottom:1px solid var(--border); padding:14px 16px;
+  position:sticky; top:0; z-index:100;
+}
+.hdr-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:13px; }
+.hdr-left { display:flex; align-items:center; gap:10px; }
+.logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.15rem; }
+.logo em { color:var(--accent); font-style:normal; }
 
-  /* LIST */
-  .fb{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
-  .fbtn{padding:5px 11px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:0.7rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
-  .fbtn.fa{border-color:var(--accent);background:rgba(79,142,247,0.1);color:var(--accent);}
-  .fbtn.fr{border-color:var(--red);background:rgba(247,97,79,0.1);color:var(--red);}
-  .fbtn.fbiz{border-color:var(--orange);background:rgba(247,161,79,0.1);color:var(--orange);}
-  .fbtn.fel{border-color:var(--green);background:rgba(61,214,140,0.1);color:var(--green);}
-  .fbtn.fw{border-color:var(--purple);background:rgba(167,139,250,0.1);color:var(--purple);}
-  .ltitle{font-family:'Syne',sans-serif;font-weight:800;font-size:0.93rem;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between;}
-  .lbadge{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:2px 9px;font-size:0.67rem;color:var(--muted);font-family:'DM Sans',sans-serif;}
-  .sgrp{margin-bottom:10px;}
-  .sghdr{display:flex;align-items:center;gap:6px;margin-bottom:7px;}
-  .sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-  .sdot.biz{background:var(--orange);} .sdot.ela{background:var(--green);}
-  .sgname{font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;}
-  .prow{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 13px;margin-bottom:5px;display:flex;align-items:center;gap:9px;}
-  .pnum{font-family:'Syne',sans-serif;font-weight:800;font-size:0.75rem;color:var(--muted);width:20px;flex-shrink:0;}
-  .pinfo{flex:1;min-width:0;}
-  .pname{font-weight:500;font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .pst{font-size:0.67rem;color:var(--muted);margin-top:1px;}
-  .ppills{display:flex;gap:4px;flex-shrink:0;}
-  .pill{border-radius:5px;padding:2px 7px;font-size:0.65rem;font-weight:600;font-family:'Syne',sans-serif;}
-  .pill.al{background:rgba(79,142,247,0.15);color:var(--accent);}
-  .pill.re{background:rgba(247,97,79,0.15);color:var(--red);}
-  .pill.wa{background:rgba(167,139,250,0.15);color:var(--purple);}
-  .sdiv{display:flex;align-items:center;gap:9px;margin:13px 0 9px;}
-  .sdiv span{font-family:'Syne',sans-serif;font-size:0.74rem;font-weight:700;color:var(--muted);white-space:nowrap;}
-  .sdiv::before,.sdiv::after{content:'';flex:1;height:1px;background:var(--border);}
-  .empty{text-align:center;padding:34px 20px;color:var(--muted);font-size:0.84rem;}
-  .empty-ic{font-size:2.2rem;margin-bottom:7px;}
+/* Occupancy badge */
+.occ {
+  display:flex; align-items:center; gap:6px;
+  background:var(--card2); border:1px solid var(--border);
+  border-radius:10px; padding:5px 10px;
+}
+.occ-dot { width:7px; height:7px; border-radius:50%; background:var(--green); animation:blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+.occ-val { font-family:'Syne',sans-serif; font-weight:800; font-size:1rem; line-height:1; }
+.occ-max { font-size:0.62rem; color:var(--muted); }
 
-  /* ADMIN PANEL */
-  .panel-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:14px;display:flex;align-items:center;gap:9px;}
-  .panel-badge{border-radius:7px;padding:3px 9px;font-size:0.7rem;font-family:'Syne',sans-serif;font-weight:700;}
-  .pb-admin{background:rgba(247,161,79,0.15);color:var(--orange);}
-  .pb-super{background:rgba(167,139,250,0.15);color:var(--purple);}
-  .aform{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:15px;margin-bottom:13px;}
-  .aform-title{font-family:'Syne',sans-serif;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:10px;}
-  .frow2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;}
-  .ai{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.86rem;outline:none;transition:border-color 0.2s;}
-  .ai:focus{border-color:var(--orange);}
-  .ai::placeholder{color:var(--muted);}
-  .ai.super:focus{border-color:var(--purple);}
-  .badd{width:100%;padding:11px;background:linear-gradient(135deg,var(--orange),#f7c14f);border:none;border-radius:10px;color:#0f1117;font-family:'Syne',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
-  .badd.super{background:linear-gradient(135deg,var(--purple),#c4b5fd);}
-  .divl{height:1px;background:var(--border);margin:13px 0;}
-  .asub{font-family:'Syne',sans-serif;font-weight:700;font-size:0.76rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:9px;}
-  .mrow{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 13px;margin-bottom:6px;display:flex;align-items:center;gap:9px;}
-  .minfo{flex:1;min-width:0;}
-  .mname{font-weight:600;font-size:0.85rem;}
-  .mphone{font-size:0.7rem;color:var(--muted);margin-top:1px;}
-  .mst{font-size:0.65rem;padding:2px 8px;border-radius:20px;font-family:'Syne',sans-serif;font-weight:700;flex-shrink:0;}
-  .mst.ok{background:rgba(61,214,140,0.15);color:var(--green);}
-  .mst.pend{background:rgba(247,161,79,0.15);color:var(--orange);}
-  .mst.adm{background:rgba(247,161,79,0.15);color:var(--orange);}
-  .mst.sadm{background:rgba(167,139,250,0.15);color:var(--purple);}
-  .bdel{background:rgba(247,97,79,0.1);border:1px solid rgba(247,97,79,0.2);color:var(--red);border-radius:7px;padding:5px 9px;font-size:0.72rem;cursor:pointer;transition:all 0.2s;font-family:'Syne',sans-serif;font-weight:700;flex-shrink:0;}
-  .bdel:hover{background:var(--red);color:#fff;}
+.hdr-right { display:flex; align-items:center; gap:7px; }
+.user-chip {
+  background:var(--card2); border:1px solid var(--border);
+  border-radius:20px; padding:5px 12px; font-size:0.72rem; color:var(--text);
+  max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.role-chip { border-radius:6px; padding:3px 8px; font-size:0.62rem; font-family:'Syne',sans-serif; font-weight:700; }
+.rc-member { background:rgba(61,214,140,0.12); color:var(--green); }
+.rc-admin { background:rgba(247,161,79,0.12); color:var(--orange); }
+.rc-super { background:rgba(167,139,250,0.12); color:var(--purple); }
+.btn-out { background:transparent; border:1px solid var(--border); border-radius:8px; padding:5px 9px; color:var(--muted); font-size:0.72rem; cursor:pointer; transition:all 0.2s; }
+.btn-out:hover { border-color:var(--red); color:var(--red); }
 
-  /* LOG */
-  .log-row{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 13px;margin-bottom:5px;}
-  .log-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;}
-  .log-action{font-size:0.8rem;font-weight:500;}
-  .log-time{font-size:0.65rem;color:var(--muted);}
-  .log-by{font-size:0.7rem;color:var(--muted);}
+/* Route + Date bar */
+.info-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--card2); border:1px solid var(--border);
+  border-radius:12px; padding:9px 14px; margin-bottom:11px;
+}
+.route { display:flex; align-items:center; gap:6px; font-family:'Syne',sans-serif; font-size:0.76rem; font-weight:600; }
+.rs { color:var(--text); } .ra { color:var(--muted); font-size:0.6rem; } .rw { color:var(--accent); }
+.date-for {
+  text-align:right;
+  font-size:0.72rem;
+}
+.date-for .df-label { color:var(--muted); font-size:0.62rem; }
+.date-for .df-val { font-family:'Syne',sans-serif; font-weight:700; color:var(--green); }
 
-  /* LOADING */
-  .loading{text-align:center;padding:26px;color:var(--muted);}
-  .spinner{width:23px;height:23px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 7px;}
-  @keyframes spin{to{transform:rotate(360deg)}}
+/* Capacity row */
+.cap-row { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.cap-card { background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:10px 13px; }
+.cap-lbl { font-size:0.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px; display:flex; align-items:center; justify-content:space-between; }
+.cap-bar { height:4px; background:rgba(255,255,255,0.07); border-radius:99px; overflow:hidden; margin-bottom:5px; }
+.cap-fill { height:100%; border-radius:99px; transition:width 0.6s cubic-bezier(.4,0,.2,1); }
+.cap-fill.ok { background:linear-gradient(90deg,var(--green),#6df7b0); }
+.cap-fill.warn { background:linear-gradient(90deg,#f7c14f,var(--orange)); }
+.cap-fill.full { background:linear-gradient(90deg,var(--red),#f7914f); }
+.cap-nums { font-family:'Syne',sans-serif; font-size:0.92rem; font-weight:700; }
+.cap-nums small { font-size:0.64rem; color:var(--muted); font-weight:400; }
 
-  /* TOAST */
-  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 20px;font-size:0.84rem;font-weight:500;box-shadow:0 9px 35px rgba(0,0,0,0.4);z-index:999;transition:transform 0.35s cubic-bezier(.4,0,.2,1);white-space:nowrap;}
-  .toast.show{transform:translateX(-50%) translateY(0);}
-  .toast.success{border-color:rgba(61,214,140,0.4);color:var(--green);}
-  .toast.error{border-color:rgba(247,97,79,0.4);color:var(--red);}
-  .toast.warn{border-color:rgba(247,161,79,0.4);color:var(--orange);}
+/* ═══════════ MAIN ═══════════ */
+.main { padding:16px; max-width:500px; margin:0 auto; }
 
-  .admin-trigger{position:fixed;bottom:0;right:0;width:44px;height:44px;cursor:pointer;z-index:50;opacity:0;}
+/* TABS - bottom navigation style */
+.tab-bar {
+  display:flex; gap:0; background:var(--card);
+  border:1px solid var(--border); border-radius:14px;
+  padding:5px; margin-bottom:18px; overflow-x:auto;
+  scrollbar-width:none;
+}
+.tab-bar::-webkit-scrollbar { display:none; }
+.tab-btn {
+  flex:1; min-width:70px; padding:10px 8px;
+  border:none; background:transparent; color:var(--muted);
+  font-family:'Syne',sans-serif; font-size:0.76rem; font-weight:600;
+  border-radius:10px; cursor:pointer; transition:all 0.2s;
+  white-space:nowrap;
+}
+.tab-btn.on { background:var(--accent); color:#fff; box-shadow:0 3px 14px rgba(79,142,247,0.35); }
+.tab-btn.on.t-admin { background:var(--orange); box-shadow:0 3px 14px rgba(247,161,79,0.3); }
+.tab-btn.on.t-super { background:var(--purple); box-shadow:0 3px 14px rgba(167,139,250,0.3); }
+.tab-btn.on.t-log { background:var(--card2); color:var(--text); }
+
+/* ═══════════ RÉSERVER ═══════════ */
+.notice {
+  background:rgba(79,142,247,0.07); border:1px solid rgba(79,142,247,0.18);
+  border-radius:12px; padding:10px 15px; font-size:0.78rem; color:var(--accent);
+  margin-bottom:14px; text-align:center;
+}
+.wait-alert {
+  background:rgba(247,161,79,0.08); border:1px solid rgba(247,161,79,0.22);
+  border-radius:12px; padding:11px 15px; font-size:0.78rem; color:var(--orange);
+  margin-bottom:14px; display:none;
+}
+.wait-alert strong { font-family:'Syne',sans-serif; }
+
+/* Section card */
+.sc { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-bottom:13px; }
+.sc-title { font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin-bottom:13px; }
+
+/* Station buttons */
+.st-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.st-btn {
+  padding:16px 12px; border:2px solid var(--border); border-radius:14px;
+  background:var(--bg); color:var(--muted); font-family:'Syne',sans-serif;
+  font-size:0.9rem; font-weight:700; cursor:pointer; transition:all 0.22s; text-align:center;
+}
+.st-btn .ico { font-size:1.6rem; display:block; margin-bottom:5px; }
+.st-btn.biz { border-color:var(--orange); background:rgba(247,161,79,0.1); color:var(--orange); box-shadow:0 4px 16px rgba(247,161,79,0.2); }
+.st-btn.ela { border-color:var(--green); background:rgba(61,214,140,0.1); color:var(--green); box-shadow:0 4px 16px rgba(61,214,140,0.2); }
+
+/* Trip cards */
+.trip-card {
+  border:2px solid var(--border); border-radius:14px;
+  padding:16px; margin-bottom:12px; transition:border-color 0.2s;
+}
+.trip-card.selected-aller { border-color:rgba(79,142,247,0.5); background:rgba(79,142,247,0.04); }
+.trip-card.selected-retour { border-color:rgba(247,97,79,0.5); background:rgba(247,97,79,0.04); }
+.trip-hdr { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.trip-ico { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
+.trip-ico.al { background:rgba(79,142,247,0.15); }
+.trip-ico.re { background:rgba(247,97,79,0.15); }
+.trip-name { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; }
+.trip-route { font-size:0.73rem; color:var(--muted); margin-top:2px; }
+.trip-btns { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.tb {
+  padding:14px; border:2px solid transparent; border-radius:12px;
+  font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700;
+  cursor:pointer; transition:all 0.2s; text-align:center;
+}
+.tb.yes { background:rgba(61,214,140,0.08); border-color:rgba(61,214,140,0.2); color:var(--green); }
+.tb.yes.on { background:var(--green); color:#0b0e18; box-shadow:0 5px 18px rgba(61,214,140,0.3); }
+.tb.no { background:rgba(247,97,79,0.08); border-color:rgba(247,97,79,0.18); color:var(--red); }
+.tb.no.on { background:var(--red); color:#fff; box-shadow:0 5px 18px rgba(247,97,79,0.3); }
+
+.btn-confirm {
+  width:100%; padding:16px; background:linear-gradient(135deg,var(--accent),#6fa8f9);
+  border:none; border-radius:14px; color:#fff; font-family:'Syne',sans-serif;
+  font-size:1rem; font-weight:700; cursor:pointer; margin-top:4px;
+  box-shadow:0 6px 22px rgba(79,142,247,0.3); transition:transform 0.15s;
+}
+.btn-confirm:active { transform:scale(0.98); }
+
+/* ═══════════ LISTE ═══════════ */
+.filter-row { display:flex; gap:7px; margin-bottom:14px; flex-wrap:wrap; }
+.fbtn {
+  padding:6px 13px; border-radius:20px; border:1.5px solid var(--border);
+  background:transparent; color:var(--muted); font-family:'Syne',sans-serif;
+  font-size:0.72rem; font-weight:700; cursor:pointer; transition:all 0.2s;
+}
+.fbtn.fa { border-color:var(--accent); background:rgba(79,142,247,0.1); color:var(--accent); }
+.fbtn.fr { border-color:var(--red); background:rgba(247,97,79,0.1); color:var(--red); }
+.fbtn.fb { border-color:var(--orange); background:rgba(247,161,79,0.1); color:var(--orange); }
+.fbtn.fe { border-color:var(--green); background:rgba(61,214,140,0.1); color:var(--green); }
+.fbtn.fw { border-color:var(--purple); background:rgba(167,139,250,0.1); color:var(--purple); }
+
+.list-title { font-family:'Syne',sans-serif; font-weight:800; font-size:0.95rem; margin-bottom:11px; display:flex; align-items:center; justify-content:space-between; }
+.lbadge { background:var(--card2); border:1px solid var(--border); border-radius:20px; padding:3px 10px; font-size:0.68rem; color:var(--muted); }
+
+.st-grp { margin-bottom:13px; }
+.st-grp-hdr { display:flex; align-items:center; gap:7px; margin-bottom:8px; padding:0 2px; }
+.sdot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.sdot.biz { background:var(--orange); } .sdot.ela { background:var(--green); }
+.st-grp-name { font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; }
+
+.prow {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:12px 14px; margin-bottom:6px;
+  display:flex; align-items:center; gap:10px;
+}
+.prow.waiting { border-color:rgba(167,139,250,0.2); background:rgba(167,139,250,0.04); }
+.p-num { font-family:'Syne',sans-serif; font-weight:800; font-size:0.72rem; color:var(--muted); width:22px; flex-shrink:0; text-align:center; }
+.p-info { flex:1; min-width:0; }
+.p-name { font-weight:600; font-size:0.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.p-st { font-size:0.68rem; color:var(--muted); margin-top:2px; }
+.p-pills { display:flex; gap:5px; flex-shrink:0; }
+.xpill { border-radius:6px; padding:3px 8px; font-size:0.66rem; font-weight:700; font-family:'Syne',sans-serif; }
+.xpill.al { background:rgba(79,142,247,0.15); color:var(--accent); }
+.xpill.re { background:rgba(247,97,79,0.15); color:var(--red); }
+.xpill.wa { background:rgba(167,139,250,0.15); color:var(--purple); }
+
+.seg { display:flex; align-items:center; gap:10px; margin:15px 0 11px; }
+.seg span { font-family:'Syne',sans-serif; font-size:0.76rem; font-weight:700; color:var(--muted); white-space:nowrap; }
+.seg::before,.seg::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* ═══════════ ADMIN ═══════════ */
+.panel-hdr { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+.panel-hdr h2 { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; }
+.pbadge { border-radius:8px; padding:4px 10px; font-size:0.7rem; font-family:'Syne',sans-serif; font-weight:700; }
+.pb-a { background:rgba(247,161,79,0.12); color:var(--orange); }
+.pb-s { background:rgba(167,139,250,0.12); color:var(--purple); }
+
+.acard { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:13px; }
+.acard-title { font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--muted); margin-bottom:12px; }
+.row2 { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:10px; }
+.row-flex { display:flex; gap:9px; }
+.ai {
+  width:100%; background:var(--bg); border:1.5px solid var(--border);
+  border-radius:11px; padding:11px 13px; color:var(--text);
+  font-family:'DM Sans',sans-serif; font-size:0.88rem; outline:none; transition:border-color 0.2s;
+}
+.ai:focus { border-color:var(--orange); }
+.ai.sup:focus { border-color:var(--purple); }
+.ai::placeholder { color:var(--muted); }
+.badd { padding:11px 16px; background:linear-gradient(135deg,var(--orange),#f7c14f); border:none; border-radius:11px; color:#0b0e18; font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:700; cursor:pointer; white-space:nowrap; }
+.badd.sup { background:linear-gradient(135deg,var(--purple),#c4b5fd); color:#fff; }
+.badd.danger { background:linear-gradient(135deg,var(--red),#f7914f); color:#fff; }
+.badd.full { width:100%; padding:12px; }
+
+.divl { height:1px; background:var(--border); margin:14px 0; }
+.sub-title { font-family:'Syne',sans-serif; font-weight:700; font-size:0.78rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:10px; }
+
+.mrow { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:7px; display:flex; align-items:center; gap:10px; }
+.m-info { flex:1; min-width:0; }
+.m-name { font-weight:600; font-size:0.88rem; }
+.m-phone { font-size:0.7rem; color:var(--muted); margin-top:2px; }
+.m-status { font-size:0.65rem; padding:3px 9px; border-radius:20px; font-family:'Syne',sans-serif; font-weight:700; flex-shrink:0; }
+.ms-ok { background:rgba(61,214,140,0.12); color:var(--green); }
+.ms-pend { background:rgba(247,161,79,0.12); color:var(--orange); }
+.ms-admin { background:rgba(247,161,79,0.12); color:var(--orange); }
+.ms-super { background:rgba(167,139,250,0.12); color:var(--purple); }
+.bdel { background:rgba(247,97,79,0.08); border:1px solid rgba(247,97,79,0.2); color:var(--red); border-radius:8px; padding:6px 10px; font-size:0.72rem; cursor:pointer; transition:all 0.2s; font-family:'Syne',sans-serif; font-weight:700; flex-shrink:0; }
+.bdel:hover { background:var(--red); color:#fff; }
+
+/* ═══════════ LOG ═══════════ */
+.log-item { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:11px 14px; margin-bottom:6px; }
+.log-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:3px; }
+.log-action { font-size:0.84rem; font-weight:600; }
+.log-time { font-size:0.65rem; color:var(--muted); }
+.log-by { font-size:0.72rem; color:var(--muted); }
+
+/* EMPTY / LOADING */
+.empty { text-align:center; padding:36px 20px; color:var(--muted); font-size:0.86rem; }
+.empty-ic { font-size:2.4rem; margin-bottom:8px; }
+.loading { text-align:center; padding:28px; color:var(--muted); }
+.spinner { width:24px; height:24px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 8px; }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* TOAST */
+.toast { position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(90px); background:var(--card2); border:1px solid var(--border); border-radius:14px; padding:12px 22px; font-size:0.86rem; font-weight:500; box-shadow:0 10px 40px rgba(0,0,0,0.5); z-index:999; transition:transform 0.35s cubic-bezier(.4,0,.2,1); white-space:nowrap; }
+.toast.show { transform:translateX(-50%) translateY(0); }
+.toast.s { border-color:rgba(61,214,140,0.35); color:var(--green); }
+.toast.e { border-color:rgba(247,97,79,0.35); color:var(--red); }
+.toast.w { border-color:rgba(247,161,79,0.35); color:var(--orange); }
+
+/* Hidden admin trigger */
+.adm-trig { position:fixed; bottom:0; right:0; width:44px; height:44px; z-index:50; opacity:0; cursor:pointer; }
 </style>
 </head>
 <body>
 
-<!-- ══════════ AUTH ══════════ -->
-<div class="auth-screen" id="authScreen">
-  <div class="auth-logo">🚌 Bus<span>Navette</span></div>
-  <div class="auth-sub">Navette Bizerte · El Alia · Tunis</div>
+<!-- ══════════════ AUTH ══════════════ -->
+<div class="auth-wrap" id="authWrap">
+  <div class="auth-brand">
+    <div class="logo-big">🚌 Bus<span>Navette</span></div>
+    <p>Bizerte · El Alia · Tunis</p>
+  </div>
 
   <!-- LOGIN -->
-  <div class="auth-card" id="cardLogin">
-    <div class="auth-title">Connexion</div>
-    <div class="auth-desc">Entrez votre numéro de téléphone et mot de passe.</div>
-    <div class="err-msg" id="errLogin"></div>
+  <div class="auth-box" id="boxLogin">
+    <h2>Connexion</h2>
+    <p class="sub">Entrez votre numéro de téléphone et mot de passe pour accéder.</p>
+    <div class="err" id="eLogin"></div>
     <div class="field"><label>Téléphone</label><input type="tel" id="lPhone" placeholder="Ex: 22334455" inputmode="numeric"></div>
     <div class="field"><label>Mot de passe</label><input type="password" id="lPass" placeholder="••••••••"></div>
-    <button class="btn-primary" onclick="doLogin()">Se connecter</button>
-    <div class="auth-toggle">Première fois ? <a onclick="showCard('cardRegister')">Créer mon compte</a></div>
+    <button class="btn-main" onclick="doLogin()">Se connecter →</button>
+    <div class="auth-link">Première fois ? <a onclick="showBox('boxRegister')">Créer mon compte</a></div>
   </div>
 
   <!-- REGISTER -->
-  <div class="auth-card" id="cardRegister" style="display:none">
-    <div class="auth-title">Créer mon compte</div>
-    <div class="auth-desc">Entrez le code d'invitation partagé par l'admin, votre nom, téléphone et choisissez un mot de passe.</div>
-    <div class="err-msg" id="errRegister"></div>
-    <div class="field"><label>Code d'invitation</label><input type="text" id="rCode" placeholder="Code secret" autocomplete="off"></div>
+  <div class="auth-box" id="boxRegister" style="display:none">
+    <h2>Créer mon compte</h2>
+    <p class="sub">Utilisez le code d'invitation partagé dans votre groupe pour vous inscrire.</p>
+    <div class="err" id="eRegister"></div>
+    <div class="field"><label>🔑 Code d'invitation</label><input type="text" id="rCode" placeholder="Code secret" autocomplete="off"></div>
     <div class="field"><label>Nom et Prénom</label><input type="text" id="rName" placeholder="Votre nom complet"></div>
     <div class="field"><label>Téléphone</label><input type="tel" id="rPhone" placeholder="Ex: 22334455" inputmode="numeric"></div>
-    <div class="field"><label>Mot de passe</label><input type="password" id="rPass" placeholder="Min. 6 caractères"></div>
+    <div class="field"><label>Mot de passe</label><input type="password" id="rPass" placeholder="Minimum 6 caractères"></div>
     <div class="field"><label>Confirmer</label><input type="password" id="rPass2" placeholder="Répétez le mot de passe"></div>
-    <button class="btn-primary" onclick="doRegister()">Créer mon compte</button>
-    <button class="btn-secondary" onclick="showCard('cardLogin')">← Retour</button>
+    <button class="btn-main" onclick="doRegister()">Créer mon compte →</button>
+    <button class="btn-ghost" onclick="showBox('boxLogin')">← Retour connexion</button>
   </div>
 
   <!-- ADMIN LOGIN -->
-  <div class="auth-card" id="cardAdminLogin" style="display:none">
-    <div class="auth-title">🔧 Accès Administrateur</div>
-    <div class="auth-desc">Réservé à l'équipe d'administration.</div>
-    <div class="err-msg" id="errAdminLogin"></div>
+  <div class="auth-box" id="boxAdmin" style="display:none">
+    <h2>🔧 Accès Administrateur</h2>
+    <p class="sub">Réservé à l'équipe d'administration de la navette.</p>
+    <div class="err" id="eAdmin"></div>
     <div class="field"><label>Mot de passe admin</label><input type="password" id="alPass" placeholder="••••••••"></div>
-    <button class="btn-primary" onclick="doAdminLogin()">Accéder</button>
-    <button class="btn-secondary" onclick="showCard('cardLogin')">← Retour</button>
+    <button class="btn-main" onclick="doAdminLogin()">Accéder →</button>
+    <button class="btn-ghost" onclick="showBox('boxLogin')">← Retour</button>
   </div>
 </div>
 
-<!-- ══════════ APP ══════════ -->
-<div id="appScreen">
-  <div class="header">
-    <div class="header-top">
-      <div class="header-left">
-        <div class="logo">🚌 Bus<span>Navette</span></div>
-        <div class="occ-badge">
+<!-- ══════════════ APP ══════════════ -->
+<div id="app">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-top">
+      <div class="hdr-left">
+        <div class="logo">🚌 Bus<em>Navette</em></div>
+        <div class="occ">
           <div class="occ-dot"></div>
-          <div><div class="occ-num" id="occNum">0</div><div class="occ-lbl">réservés</div></div>
+          <div>
+            <div class="occ-val" id="occVal">0</div>
+            <div class="occ-max">/ 29</div>
+          </div>
         </div>
       </div>
-      <div class="header-right">
-        <span class="role-pill" id="rolePill"></span>
-        <div class="user-pill" id="userPill">—</div>
-        <button class="btn-logout" onclick="doLogout()">✕</button>
+      <div class="hdr-right">
+        <span class="role-chip" id="roleChip"></span>
+        <div class="user-chip" id="userChip">—</div>
+        <button class="btn-out" onclick="doLogout()">✕</button>
       </div>
     </div>
-    <div class="route-bar">
-      <span class="rs">📍 Bizerte</span><span class="ra">→</span>
-      <span class="rs">📍 El Alia</span><span class="ra">→</span>
-      <span class="rw">🏢 Tunis</span>
+
+    <div class="info-bar">
+      <div class="route">
+        <span class="rs">📍 Bizerte</span><span class="ra">→</span>
+        <span class="rs">📍 El Alia</span><span class="ra">→</span>
+        <span class="rw">🏢 Tunis</span>
+      </div>
+      <div class="date-for">
+        <div class="df-label">Réservation pour</div>
+        <div class="df-val" id="tomorrowDate">—</div>
+      </div>
     </div>
+
     <div class="cap-row">
       <div class="cap-card">
-        <div class="cap-lbl">🌅 Aller</div>
+        <div class="cap-lbl">🌅 Aller <span id="cntA">0/29</span></div>
         <div class="cap-bar"><div class="cap-fill ok" id="barA" style="width:0%"></div></div>
-        <div class="cap-nums"><span id="cntA">0</span><small>/29 places</small></div>
+        <div class="cap-nums"><span id="remA">29</span><small> places dispo</small></div>
       </div>
       <div class="cap-card">
-        <div class="cap-lbl">🌆 Retour</div>
+        <div class="cap-lbl">🌆 Retour <span id="cntR">0/29</span></div>
         <div class="cap-bar"><div class="cap-fill ok" id="barR" style="width:0%"></div></div>
-        <div class="cap-nums"><span id="cntR">0</span><small>/29 places</small></div>
+        <div class="cap-nums"><span id="remR">29</span><small> places dispo</small></div>
       </div>
     </div>
   </div>
 
   <div class="main">
-    <div class="tabs" id="tabBar">
-      <button class="tab active" id="tab-btn-reserver" onclick="switchTab('reserver')">✏️ Réserver</button>
-      <button class="tab" id="tab-btn-liste" onclick="switchTab('liste')">👥 Liste</button>
-      <button class="tab t-admin" id="tab-btn-admin" onclick="switchTab('admin')" style="display:none">🔧 Admin</button>
-      <button class="tab t-super" id="tab-btn-super" onclick="switchTab('super')" style="display:none">⚡ Super</button>
-      <button class="tab" id="tab-btn-log" onclick="switchTab('log')" style="display:none">📋 Journal</button>
+    <!-- TABS -->
+    <div class="tab-bar" id="tabBar">
+      <button class="tab-btn on" id="tb-reserver" onclick="switchTab('reserver')">✏️ Réserver</button>
+      <button class="tab-btn" id="tb-liste" onclick="switchTab('liste')">👥 Liste</button>
+      <button class="tab-btn t-admin" id="tb-admin" onclick="switchTab('admin')" style="display:none">🔧 Admin</button>
+      <button class="tab-btn t-super" id="tb-super" onclick="switchTab('super')" style="display:none">⚡ Super</button>
+      <button class="tab-btn t-log" id="tb-log" onclick="switchTab('log')" style="display:none">📋 Journal</button>
     </div>
 
-    <!-- RÉSERVER -->
-    <div id="tab-reserver">
-      <div class="notice">🕖 Réservations ouvertes à partir de 19h</div>
-      <div class="wait-banner" id="waitBanner" style="display:none">
-        ⏳ <strong>Bus complet</strong> — Votre réservation sera mise en liste d'attente.
+    <!-- ── RÉSERVER ── -->
+    <div id="pv-reserver">
+      <div class="notice">🕖 Les réservations ouvrent à partir de 19h chaque soir</div>
+      <div class="wait-alert" id="waitAlert">
+        ⏳ <strong>Attention !</strong> <span id="waitMsg">Le bus est complet.</span> Votre réservation sera en liste d'attente.
       </div>
+
       <div class="sc">
-        <div class="slbl">Votre station de départ</div>
-        <div class="sgrid">
-          <button class="sbtn" id="btnBiz" onclick="selStation('Bizerte')"><span class="si">🟠</span>Bizerte</button>
-          <button class="sbtn" id="btnEla" onclick="selStation('El Alia')"><span class="si">🟢</span>El Alia</button>
+        <div class="sc-title">📍 Votre station de départ</div>
+        <div class="st-grid">
+          <button class="st-btn" id="sBiz" onclick="selSt('Bizerte')">
+            <span class="ico">🟠</span>Bizerte
+          </button>
+          <button class="st-btn" id="sEla" onclick="selSt('El Alia')">
+            <span class="ico">🟢</span>El Alia
+          </button>
         </div>
       </div>
-      <div class="sc">
-        <div class="th"><div class="ti al">🌅</div><div><div class="tt">Trajet Aller</div><div class="tr">Bizerte → El Alia → Tunis</div></div></div>
-        <div class="bg">
-          <button class="bt res" id="bAO" onclick="selTrip('aller','oui')">✓ Je réserve</button>
-          <button class="bt ann" id="bAN" onclick="selTrip('aller','non')">✕ J'annule</button>
+
+      <div class="trip-card" id="tcAller">
+        <div class="trip-hdr">
+          <div class="trip-ico al">🌅</div>
+          <div>
+            <div class="trip-name">Trajet Aller</div>
+            <div class="trip-route">Bizerte → El Alia → Tunis</div>
+          </div>
+        </div>
+        <div class="trip-btns">
+          <button class="tb yes" id="bAO" onclick="selTrip('aller','oui')">✓ Je réserve</button>
+          <button class="tb no" id="bAN" onclick="selTrip('aller','non')">✕ J'annule</button>
         </div>
       </div>
-      <div class="sc">
-        <div class="th"><div class="ti re">🌆</div><div><div class="tt">Trajet Retour</div><div class="tr">Tunis → El Alia → Bizerte</div></div></div>
-        <div class="bg">
-          <button class="bt res" id="bRO" onclick="selTrip('retour','oui')">✓ Je réserve</button>
-          <button class="bt ann" id="bRN" onclick="selTrip('retour','non')">✕ J'annule</button>
+
+      <div class="trip-card" id="tcRetour">
+        <div class="trip-hdr">
+          <div class="trip-ico re">🌆</div>
+          <div>
+            <div class="trip-name">Trajet Retour</div>
+            <div class="trip-route">Tunis → El Alia → Bizerte</div>
+          </div>
+        </div>
+        <div class="trip-btns">
+          <button class="tb yes" id="bRO" onclick="selTrip('retour','oui')">✓ Je réserve</button>
+          <button class="tb no" id="bRN" onclick="selTrip('retour','non')">✕ J'annule</button>
         </div>
       </div>
-      <button class="bsub" onclick="submitRes()">Confirmer ma réservation</button>
+
+      <button class="btn-confirm" onclick="submitRes()">Confirmer ma réservation</button>
     </div>
 
-    <!-- LISTE -->
-    <div id="tab-liste" style="display:none">
-      <div class="fb">
+    <!-- ── LISTE ── -->
+    <div id="pv-liste" style="display:none">
+      <div class="filter-row">
         <button class="fbtn fa" id="f-all" onclick="setFilter('all')">Tous</button>
         <button class="fbtn" id="f-aller" onclick="setFilter('aller')">🌅 Aller</button>
         <button class="fbtn" id="f-retour" onclick="setFilter('retour')">🌆 Retour</button>
@@ -318,518 +497,469 @@
       <div id="listContent"><div class="loading"><div class="spinner"></div></div></div>
     </div>
 
-    <!-- ADMIN -->
-    <div id="tab-admin" style="display:none">
-      <div class="panel-title">Gestion membres <span class="panel-badge pb-admin">ADMIN</span></div>
-      <div class="aform">
-        <div class="aform-title">➕ Ajouter un membre</div>
-        <div class="frow2">
-          <input class="ai" id="aMemberName" placeholder="Nom Prénom" type="text">
-          <input class="ai" id="aMemberPhone" placeholder="Téléphone" type="tel" inputmode="numeric">
+    <!-- ── ADMIN ── -->
+    <div id="pv-admin" style="display:none">
+      <div class="panel-hdr"><h2>Gestion des membres</h2><span class="pbadge pb-a">ADMIN</span></div>
+
+      <div class="acard">
+        <div class="acard-title">➕ Ajouter un membre</div>
+        <div class="row2">
+          <input class="ai" id="mName" placeholder="Nom Prénom" type="text">
+          <input class="ai" id="mPhone" placeholder="Téléphone" type="tel" inputmode="numeric">
         </div>
-        <button class="badd" onclick="addMember()">Ajouter au groupe</button>
+        <button class="badd full" onclick="addMember()">Ajouter au groupe</button>
       </div>
+
       <div class="divl"></div>
-      <div class="asub">Membres (<span id="mCount">0</span>)</div>
+      <div class="sub-title">Membres du groupe (<span id="mCount">0</span>)</div>
       <div id="membersList"><div class="loading"><div class="spinner"></div></div></div>
     </div>
 
-    <!-- SUPER ADMIN -->
-    <div id="tab-super" style="display:none">
-      <div class="panel-title">Super Admin <span class="panel-badge pb-super">SUPER</span></div>
+    <!-- ── SUPER ADMIN ── -->
+    <div id="pv-super" style="display:none">
+      <div class="panel-hdr"><h2>Super Admin</h2><span class="pbadge pb-s">SUPER</span></div>
 
-      <div class="aform">
-        <div class="aform-title">🔑 Code d'invitation</div>
-        <div style="display:flex;gap:9px;margin-bottom:9px;">
-          <input class="ai super" id="inviteCodeInput" placeholder="Code actuel ou nouveau" type="text" style="flex:1">
-          <button class="badd super" style="width:auto;padding:10px 14px;" onclick="updateInviteCode()">Modifier</button>
+      <div class="acard">
+        <div class="acard-title">🔑 Code d'invitation</div>
+        <div class="row-flex">
+          <input class="ai sup" id="invCode" placeholder="Nouveau code" type="text" style="flex:1">
+          <button class="badd sup" onclick="updateCode()">Modifier</button>
         </div>
-        <div style="font-size:0.72rem;color:var(--muted)">Code actuel : <strong id="currentInviteCode" style="color:var(--purple)">chargement...</strong></div>
+        <div style="margin-top:8px;font-size:0.73rem;color:var(--muted)">Code actuel : <strong id="curCode" style="color:var(--purple)">—</strong></div>
       </div>
 
-      <div class="aform">
-        <div class="aform-title">👑 Promouvoir en Admin</div>
-        <div class="frow2">
-          <input class="ai super" id="promotePhone" placeholder="Téléphone membre" type="tel" inputmode="numeric">
-          <button class="badd super" onclick="promoteToAdmin()">Promouvoir</button>
-        </div>
-      </div>
-
-      <div class="aform">
-        <div class="aform-title">🔽 Rétrograder un Admin</div>
-        <div class="frow2">
-          <input class="ai super" id="demotePhone" placeholder="Téléphone admin" type="tel" inputmode="numeric">
-          <button class="badd" style="background:linear-gradient(135deg,var(--red),#f7914f);" onclick="demoteAdmin()">Rétrograder</button>
+      <div class="acard">
+        <div class="acard-title">👑 Promouvoir en Admin</div>
+        <div class="row-flex">
+          <input class="ai sup" id="proPhone" placeholder="Téléphone du membre" type="tel" style="flex:1" inputmode="numeric">
+          <button class="badd sup" onclick="promote()">Promouvoir</button>
         </div>
       </div>
 
-      <div class="aform">
-        <div class="aform-title">🔐 Mot de passe Super Admin</div>
-        <div style="display:flex;gap:9px;">
-          <input class="ai super" id="newSuperPass" placeholder="Nouveau mot de passe" type="password" style="flex:1">
-          <button class="badd super" style="width:auto;padding:10px 14px;" onclick="changeSuperPass()">Modifier</button>
+      <div class="acard">
+        <div class="acard-title">🔽 Rétrograder un Admin</div>
+        <div class="row-flex">
+          <input class="ai" id="demPhone" placeholder="Téléphone de l'admin" type="tel" style="flex:1" inputmode="numeric">
+          <button class="badd danger" onclick="demote()">Rétrograder</button>
+        </div>
+      </div>
+
+      <div class="acard">
+        <div class="acard-title">🔐 Mot de passe Super Admin</div>
+        <div class="row-flex">
+          <input class="ai sup" id="newSPass" placeholder="Nouveau mot de passe" type="password" style="flex:1">
+          <button class="badd sup" onclick="changeSPass()">Modifier</button>
         </div>
       </div>
 
       <div class="divl"></div>
-      <div class="asub">Tous les membres</div>
-      <div id="superMembersList"><div class="loading"><div class="spinner"></div></div></div>
+      <div class="sub-title">Tous les membres</div>
+      <div id="superList"><div class="loading"><div class="spinner"></div></div></div>
     </div>
 
-    <!-- JOURNAL -->
-    <div id="tab-log" style="display:none">
-      <div class="panel-title">Journal d'activité 📋</div>
+    <!-- ── JOURNAL ── -->
+    <div id="pv-log" style="display:none">
+      <div class="panel-hdr"><h2>Journal d'activité</h2></div>
       <div id="logContent"><div class="loading"><div class="spinner"></div></div></div>
     </div>
   </div>
 </div>
 
-<div class="admin-trigger" id="adminTrigger" onclick="triggerAdmin()"></div>
+<div class="adm-trig" onclick="trigAdmin()"></div>
 <div class="toast" id="toast"></div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, set, get, onValue, remove, update, push, query, orderByChild, limitToLast }
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue, remove, update, push, query, orderByChild, limitToLast }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  const FC = {
-    apiKey:"AIzaSyAM6or5v-KbDULxs7JsT_2vWs5pBmvB7nE",
-    authDomain:"reservation-bus-bizerte-alia.firebaseapp.com",
-    databaseURL:"https://reservation-bus-bizerte-alia-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId:"reservation-bus-bizerte-alia",
-    storageBucket:"reservation-bus-bizerte-alia.firebasestorage.app",
-    messagingSenderId:"166885172887",
-    appId:"1:166885172887:web:aa3e62bf6aa84f56206bd2"
-  };
-  const db = getDatabase(initializeApp(FC));
-  const MAX = 29;
+const db = getDatabase(initializeApp({
+  apiKey:"AIzaSyAM6or5v-KbDULxs7JsT_2vWs5pBmvB7nE",
+  authDomain:"reservation-bus-bizerte-alia.firebaseapp.com",
+  databaseURL:"https://reservation-bus-bizerte-alia-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"reservation-bus-bizerte-alia",
+  storageBucket:"reservation-bus-bizerte-alia.firebasestorage.app",
+  messagingSenderId:"166885172887",
+  appId:"1:166885172887:web:aa3e62bf6aa84f56206bd2"
+}));
 
-  let CU = null; // current user
-  let choix = {aller:null,retour:null};
-  let selSt = null;
-  let curFilter = 'all';
-  let cached = {};
-  let tapCount = 0;
+const MAX = 29;
+let CU = null;
+let choix = {aller:null, retour:null};
+let selStation = null;
+let curFilter = 'all';
+let cached = {};
+let tapCount = 0;
 
-  // Date
-  const tom = new Date(); tom.setDate(tom.getDate()+1);
-  const DK = tom.toISOString().split('T')[0].replace(/-/g,'_');
-  const resRef = ref(db,`reservations/${DK}`);
+// ── DATE ──
+const tom = new Date();
+tom.setDate(tom.getDate()+1);
+const jours = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+const mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+const DK = tom.toISOString().split('T')[0].replace(/-/g,'_');
+const resRef = ref(db, `reservations/${DK}`);
 
-  // ── HELPERS ──
-  const $ = id => document.getElementById(id);
-  const show = id => $(id).style.display='block';
-  const hide = id => $(id).style.display='none';
-  const showFlex = id => $(id).style.display='flex';
-  const showErr = (id,msg) => { const e=$(id); e.textContent=msg; e.style.display='block'; };
+document.getElementById('tomorrowDate').textContent =
+  jours[tom.getDay()] + ' ' + tom.getDate() + ' ' + mois[tom.getMonth()] + ' ' + tom.getFullYear();
 
-  function showToast(msg,type='success'){
-    const t=$('toast'); t.textContent=msg; t.className=`toast ${type}`;
-    setTimeout(()=>t.classList.add('show'),10);
-    setTimeout(()=>t.classList.remove('show'),3200);
+// ── HELPERS ──
+const $ = id => document.getElementById(id);
+const show = id => $(id).style.display='block';
+const hide = id => $(id).style.display='none';
+const showFlex = id => $(id).style.display='flex';
+const showErr = (id,msg) => { const e=$(id); e.textContent=msg; e.style.display='block'; };
+const clearErr = id => $(id).style.display='none';
+
+function toast(msg, type='s') {
+  const t=$('toast'); t.textContent=msg; t.className=`toast ${type}`;
+  setTimeout(()=>t.classList.add('show'),10);
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+async function log(action, details='') {
+  if(!CU) return;
+  await push(ref(db,'activity_log'), {action, details, by:CU.name, phone:CU.phone, role:CU.role, ts:Date.now()});
+}
+
+// ── AUTH ──
+window.showBox = id => {
+  ['boxLogin','boxRegister','boxAdmin'].forEach(b=>hide(b));
+  showFlex(id);
+};
+showFlex('boxLogin');
+
+window.doLogin = async () => {
+  const phone=$('lPhone').value.trim(), pass=$('lPass').value;
+  clearErr('eLogin');
+  if(!phone||!pass){showErr('eLogin','Remplissez tous les champs');return;}
+  const snap=await get(ref(db,`members/${phone}`));
+  if(!snap.exists()){showErr('eLogin','Numéro non autorisé. Contactez l\'admin.');return;}
+  const m=snap.val();
+  if(!m.password){showErr('eLogin','Compte non activé. Utilisez "Créer mon compte".');return;}
+  if(m.password!==pass){showErr('eLogin','Mot de passe incorrect.');return;}
+  CU={phone,name:m.name,role:m.role||'member'};
+  await log('Connexion');
+  enterApp();
+};
+
+window.doRegister = async () => {
+  const code=$('rCode').value.trim(), name=$('rName').value.trim(),
+        phone=$('rPhone').value.trim(), pass=$('rPass').value, pass2=$('rPass2').value;
+  clearErr('eRegister');
+  if(!code||!name||!phone||!pass||!pass2){showErr('eRegister','Remplissez tous les champs');return;}
+  if(pass.length<6){showErr('eRegister','Mot de passe trop court (min 6 caractères)');return;}
+  if(pass!==pass2){showErr('eRegister','Les mots de passe ne correspondent pas');return;}
+  const cs=await get(ref(db,'settings/inviteCode'));
+  if((cs.exists()?cs.val():'BUS2024')!==code){showErr('eRegister','Code d\'invitation incorrect.');return;}
+  const ex=await get(ref(db,`members/${phone}`));
+  if(ex.exists()&&ex.val().password){showErr('eRegister','Ce numéro a déjà un compte.');return;}
+  await set(ref(db,`members/${phone}`),{name,phone,role:'member',password:pass,createdAt:Date.now()});
+  CU={phone,name,role:'member'};
+  await log('Inscription');
+  enterApp(); toast('✅ Compte créé avec succès !');
+};
+
+window.doAdminLogin = async () => {
+  const pass=$('alPass').value; clearErr('eAdmin');
+  const snap=await get(ref(db,'settings/superPass'));
+  if((snap.exists()?snap.val():'admin1234')!==pass){showErr('eAdmin','Mot de passe incorrect');return;}
+  CU={phone:'superadmin',name:'Super Admin',role:'superadmin'};
+  await log('Connexion Super Admin');
+  enterApp();
+};
+
+function enterApp() {
+  hide('authWrap'); show('app');
+  $('userChip').textContent=CU.name;
+  const rc=$('roleChip');
+  if(CU.role==='superadmin'){rc.textContent='Super Admin';rc.className='role-chip rc-super';show('tb-super');show('tb-admin');show('tb-log');}
+  else if(CU.role==='admin'){rc.textContent='Admin';rc.className='role-chip rc-admin';show('tb-admin');show('tb-log');}
+  else{rc.textContent='Membre';rc.className='role-chip rc-member';}
+
+  try{const s=JSON.parse(localStorage.getItem(`bp_${CU.phone}`)||'{}');if(s.station)selSt(s.station);}catch(e){}
+
+  onValue(resRef, snap=>{
+    cached=snap.val()||{};
+    updateCap(cached);
+    updateWaitAlert(cached);
+    if($('pv-liste').style.display!=='none') renderList(cached);
+  });
+  if(CU.role==='superadmin') loadSuperPanel();
+  if(CU.role==='superadmin'||CU.role==='admin') loadMembers();
+}
+
+window.doLogout=async()=>{
+  await log('Déconnexion');
+  CU=null; choix={aller:null,retour:null}; selStation=null;
+  hide('app'); showFlex('authWrap');
+  ['tb-admin','tb-super','tb-log'].forEach(id=>hide(id));
+  $('lPhone').value=''; $('lPass').value='';
+  showBox('boxLogin'); switchTab('reserver');
+};
+
+// ── CAPACITY ──
+function updateCap(data) {
+  // Count UNIQUE persons (not waiting) who reserved aller OR retour
+  const confirmed=Object.values(data).filter(p=>p.status!=='waiting');
+  const cA=confirmed.filter(p=>p.aller==='oui').length;
+  const cR=confirmed.filter(p=>p.retour==='oui').length;
+  // Unique persons = those with aller OR retour reserved
+  const unique=confirmed.filter(p=>p.aller==='oui'||p.retour==='oui').length;
+
+  $('occVal').textContent=unique;
+  $('cntA').textContent=`${cA}/29`;
+  $('cntR').textContent=`${cR}/29`;
+  $('remA').textContent=Math.max(0,MAX-cA);
+  $('remR').textContent=Math.max(0,MAX-cR);
+  setBar('barA',cA); setBar('barR',cR);
+}
+
+function setBar(id,n){
+  const pct=Math.min(100,(n/MAX)*100);
+  const el=$(id); el.style.width=pct+'%';
+  el.className='cap-fill '+(pct>=100?'full':pct>=75?'warn':'ok');
+}
+
+function updateWaitAlert(data){
+  const confirmed=Object.values(data).filter(p=>p.status!=='waiting');
+  const cA=confirmed.filter(p=>p.aller==='oui').length;
+  const cR=confirmed.filter(p=>p.retour==='oui').length;
+  const aFull=cA>=MAX, rFull=cR>=MAX;
+  const alert=$('waitAlert');
+  if(aFull||rFull){
+    $('waitMsg').textContent=aFull&&rFull?'Aller et Retour complets.':aFull?'Aller complet.':'Retour complet.';
+    alert.style.display='block';
+  } else alert.style.display='none';
+}
+
+// ── TABS ──
+window.switchTab=function(tab){
+  ['reserver','liste','admin','super','log'].forEach(t=>{
+    const pv=$(`pv-${t}`); if(pv) pv.style.display=t===tab?'block':'none';
+    const tb=$(`tb-${t}`); if(tb) tb.classList.toggle('on',t===tab);
+  });
+  if(tab==='liste') renderList(cached);
+  if(tab==='admin') loadMembers();
+  if(tab==='super') loadSuperPanel();
+  if(tab==='log') loadLog();
+};
+
+// ── RESERVE ──
+window.selSt=function(s){
+  selStation=s;
+  $('sBiz').className='st-btn'+(s==='Bizerte'?' biz':'');
+  $('sEla').className='st-btn'+(s==='El Alia'?' ela':'');
+  if(CU) localStorage.setItem(`bp_${CU.phone}`,JSON.stringify({station:s}));
+};
+
+window.selTrip=function(trip,val){
+  choix[trip]=val;
+  if(trip==='aller'){
+    $('bAO').classList.toggle('on',val==='oui');
+    $('bAN').classList.toggle('on',val==='non');
+    $('tcAller').className='trip-card'+(val==='oui'?' selected-aller':'');
+  } else {
+    $('bRO').classList.toggle('on',val==='oui');
+    $('bRN').classList.toggle('on',val==='non');
+    $('tcRetour').className='trip-card'+(val==='oui'?' selected-retour':'');
+  }
+};
+
+window.submitRes=async function(){
+  if(!CU){toast('Connectez-vous d\'abord','e');return;}
+  if(!selStation){toast('Choisissez votre station','e');return;}
+  if(!choix.aller&&!choix.retour){toast('Choisissez au moins un trajet','e');return;}
+
+  const key=CU.phone;
+  const old=cached[key];
+  const confirmed=Object.values(cached).filter(p=>p.status!=='waiting'&&p.phone!==key);
+  const cA=confirmed.filter(p=>p.aller==='oui').length;
+  const cR=confirmed.filter(p=>p.retour==='oui').length;
+
+  const wA=choix.aller==='oui', wR=choix.retour==='oui';
+  const aFull=cA>=MAX, rFull=cR>=MAX;
+
+  let status='confirmed', msg='', toastType='s';
+
+  if(wA&&wR){
+    if(aFull||rFull){ status='waiting'; msg='⏳ Bus complet — liste d\'attente'; toastType='w'; }
+    else msg='✅ Aller + Retour réservés !';
+  } else if(wA){
+    if(aFull){ status='waiting'; msg='⏳ Aller complet — liste d\'attente'; toastType='w'; }
+    else msg='✅ Aller réservé !';
+  } else if(wR){
+    if(rFull){ status='waiting'; msg='⏳ Retour complet — liste d\'attente'; toastType='w'; }
+    else msg='✅ Retour réservé !';
+  } else msg='✅ Annulation enregistrée';
+
+  await set(ref(db,`reservations/${DK}/${key}`),{
+    nom:CU.name, phone:key, station:selStation,
+    aller:choix.aller||'non', retour:choix.retour||'non',
+    status, ts: old?old.ts:Date.now()
+  });
+  await log('Réservation',`${wA?'Aller':''}${wA&&wR?'+':''}${wR?'Retour':''} ${selStation} [${status}]`);
+  toast(msg, toastType);
+};
+
+// ── LIST ──
+window.setFilter=function(f){
+  curFilter=f;
+  const map={all:'fa',aller:'fa',retour:'fr',biz:'fb',ela:'fe',wait:'fw'};
+  ['all','aller','retour','biz','ela','wait'].forEach(id=>{
+    $(`f-${id}`).className='fbtn'+(f===id?' '+map[id]:'');
+  });
+  renderList(cached);
+};
+
+function renderList(data){
+  const sorted=Object.values(data).sort((a,b)=>(a.ts||0)-(b.ts||0));
+  const confirmed=sorted.filter(p=>p.status!=='waiting'&&(p.aller==='oui'||p.retour==='oui'));
+  const waiting=sorted.filter(p=>p.status==='waiting');
+
+  if(curFilter==='wait'){
+    if(!waiting.length){$('listContent').innerHTML=`<div class="empty"><div class="empty-ic">✅</div>Aucune liste d'attente</div>`;return;}
+    let html=`<div class="list-title">⏳ Liste d'attente <span class="lbadge">${waiting.length}</span></div>`;
+    waiting.forEach((p,i)=>{
+      html+=`<div class="prow waiting"><div class="p-num">${i+1}</div><div class="p-info"><div class="p-name">${p.nom}</div><div class="p-st">📍 ${p.station}</div></div><div class="p-pills">${p.aller==='oui'?'<span class="xpill al">Aller</span>':''}${p.retour==='oui'?'<span class="xpill re">Retour</span>':''}</div></div>`;
+    });
+    $('listContent').innerHTML=html; return;
   }
 
-  async function logActivity(action, details=''){
-    if(!CU) return;
-    await push(ref(db,'activity_log'),{
-      action, details, by: CU.name, phone: CU.phone,
-      role: CU.role, ts: Date.now()
+  let entries=confirmed;
+  if(curFilter==='aller') entries=confirmed.filter(p=>p.aller==='oui');
+  else if(curFilter==='retour') entries=confirmed.filter(p=>p.retour==='oui');
+  else if(curFilter==='biz') entries=confirmed.filter(p=>p.station==='Bizerte');
+  else if(curFilter==='ela') entries=confirmed.filter(p=>p.station==='El Alia');
+
+  if(!entries.length){$('listContent').innerHTML=`<div class="empty"><div class="empty-ic">🚌</div>Aucune réservation</div>`;return;}
+
+  const allers=entries.filter(p=>p.aller==='oui');
+  const retours=entries.filter(p=>p.retour==='oui');
+  let html='';
+
+  if(allers.length){
+    html+=`<div class="list-title">🌅 Aller <span class="lbadge">${allers.length}/29</span></div>`;
+    ['Bizerte','El Alia'].forEach(st=>{
+      const g=allers.filter(p=>p.station===st); if(!g.length)return;
+      const cls=st==='Bizerte'?'biz':'ela';
+      html+=`<div class="st-grp"><div class="st-grp-hdr"><div class="sdot ${cls}"></div><div class="st-grp-name">📍 ${st} (${g.length})</div></div>`;
+      g.forEach((p,i)=>{ html+=`<div class="prow"><div class="p-num">${i+1}</div><div class="p-info"><div class="p-name">${p.nom}</div><div class="p-st">📍 ${p.station}</div></div><span class="xpill al">Aller</span></div>`; });
+      html+='</div>';
     });
   }
-
-  // ── AUTH CARDS ──
-  window.showCard = id => {
-    ['cardLogin','cardRegister','cardAdminLogin'].forEach(c=>hide(c));
-    showFlex(id);
-  };
-  showFlex('cardLogin');
-
-  window.doLogin = async () => {
-    const phone = $('lPhone').value.trim();
-    const pass = $('lPass').value;
-    $('errLogin').style.display='none';
-    if(!phone||!pass){showErr('errLogin','Remplissez tous les champs');return;}
-
-    const snap = await get(ref(db,`members/${phone}`));
-    if(!snap.exists()){showErr('errLogin','Numéro non autorisé. Contactez l\'admin.');return;}
-    const m = snap.val();
-    if(!m.password){showErr('errLogin','Compte non activé. Utilisez "Créer mon compte".');return;}
-    if(m.password!==pass){showErr('errLogin','Mot de passe incorrect.');return;}
-
-    CU = {phone, name:m.name, role:m.role||'member'};
-    await logActivity('Connexion');
-    enterApp();
-  };
-
-  window.doRegister = async () => {
-    const code=$('rCode').value.trim();
-    const name=$('rName').value.trim();
-    const phone=$('rPhone').value.trim();
-    const pass=$('rPass').value;
-    const pass2=$('rPass2').value;
-    $('errRegister').style.display='none';
-    if(!code||!name||!phone||!pass||!pass2){showErr('errRegister','Remplissez tous les champs');return;}
-    if(pass.length<6){showErr('errRegister','Mot de passe trop court (min 6)');return;}
-    if(pass!==pass2){showErr('errRegister','Mots de passe différents');return;}
-
-    // Check invite code
-    const codeSnap = await get(ref(db,'settings/inviteCode'));
-    const validCode = codeSnap.exists() ? codeSnap.val() : 'BUS2024';
-    if(code!==validCode){showErr('errRegister','Code d\'invitation incorrect.');return;}
-
-    // Check if phone already exists
-    const existing = await get(ref(db,`members/${phone}`));
-    if(existing.exists()&&existing.val().password){showErr('errRegister','Ce numéro a déjà un compte.');return;}
-
-    await set(ref(db,`members/${phone}`),{name,phone,role:'member',password:pass,createdAt:Date.now()});
-    CU={phone,name,role:'member'};
-    await logActivity('Inscription');
-    enterApp();
-    showToast('✅ Compte créé !');
-  };
-
-  window.doAdminLogin = async () => {
-    const pass=$('alPass').value;
-    $('errAdminLogin').style.display='none';
-    const snap=await get(ref(db,'settings/superPass'));
-    const stored=snap.exists()?snap.val():'admin1234';
-    if(pass!==stored){showErr('errAdminLogin','Mot de passe incorrect');return;}
-    CU={phone:'superadmin',name:'Super Admin',role:'superadmin'};
-    await logActivity('Connexion Super Admin');
-    enterApp();
-  };
-
-  function enterApp(){
-    hide('authScreen'); show('appScreen');
-    $('userPill').textContent=CU.name;
-    const rp=$('rolePill');
-    if(CU.role==='superadmin'){rp.textContent='Super Admin';rp.className='role-pill superadmin';show('tab-btn-super');show('tab-btn-admin');show('tab-btn-log');}
-    else if(CU.role==='admin'){rp.textContent='Admin';rp.className='role-pill admin';show('tab-btn-admin');show('tab-btn-log');}
-    else{rp.textContent='Membre';rp.className='role-pill member';}
-
-    try{const s=JSON.parse(localStorage.getItem(`bp_${CU.phone}`)||'{}');if(s.station)selStation(s.station);}catch(e){}
-
-    onValue(resRef,snap=>{
-      cached=snap.val()||{};
-      updateCap(cached);
-      updateWaitBanner(cached);
-      if($('tab-liste').style.display!=='none') renderList(cached);
+  if(retours.length){
+    if(allers.length) html+=`<div class="seg"><span>🌆 Retour • ${retours.length}/29</span></div>`;
+    else html+=`<div class="list-title">🌆 Retour <span class="lbadge">${retours.length}/29</span></div>`;
+    ['El Alia','Bizerte'].forEach(st=>{
+      const g=retours.filter(p=>p.station===st); if(!g.length)return;
+      const cls=st==='Bizerte'?'biz':'ela';
+      html+=`<div class="st-grp"><div class="st-grp-hdr"><div class="sdot ${cls}"></div><div class="st-grp-name">📍 ${st} (${g.length})</div></div>`;
+      g.forEach((p,i)=>{ html+=`<div class="prow"><div class="p-num">${i+1}</div><div class="p-info"><div class="p-name">${p.nom}</div><div class="p-st">📍 ${p.station}</div></div><span class="xpill re">Retour</span></div>`; });
+      html+='</div>';
     });
-
-    if(CU.role==='superadmin') loadSuperPanel();
-    if(CU.role==='superadmin'||CU.role==='admin') loadMembers();
   }
+  $('listContent').innerHTML=html;
+}
 
-  window.doLogout=async()=>{
-    await logActivity('Déconnexion');
-    CU=null; choix={aller:null,retour:null}; selSt=null;
-    hide('appScreen');
-    $('appScreen').style.display='none';
-    showFlex('authScreen');
-    ['tab-btn-admin','tab-btn-super','tab-btn-log'].forEach(id=>hide(id));
-    $('lPhone').value=''; $('lPass').value='';
-    showCard('cardLogin');
-    switchTab('reserver');
-  };
+// ── ADMIN ──
+window.addMember=async()=>{
+  const name=$('mName').value.trim(), phone=$('mPhone').value.trim();
+  if(!name||!phone){toast('Nom et téléphone requis','e');return;}
+  const snap=await get(ref(db,`members/${phone}`));
+  if(snap.exists()){toast('Ce numéro existe déjà','e');return;}
+  await set(ref(db,`members/${phone}`),{name,phone,role:'member',createdAt:Date.now()});
+  $('mName').value=''; $('mPhone').value='';
+  await log('Ajout membre',`${name} (${phone})`);
+  toast(`✅ ${name} ajouté !`);
+  loadMembers();
+};
 
-  // ── CAPACITY ──
-  function updateCap(data){
-    let cA=0,cR=0;
-    Object.values(data).filter(p=>p.status!=='waiting').forEach(p=>{
-      if(p.aller==='oui')cA++;
-      if(p.retour==='oui')cR++;
-    });
-    $('cntA').textContent=cA; $('cntR').textContent=cR;
-    $('occNum').textContent=cA+cR;
-    setBar('barA',cA); setBar('barR',cR);
-  }
+window.deleteMember=async(phone,name)=>{
+  if(!confirm(`Supprimer ${name} du groupe ?`))return;
+  await remove(ref(db,`members/${phone}`));
+  await log('Suppression membre',`${name} (${phone})`);
+  toast('Membre retiré','w');
+  loadMembers(); if(CU.role==='superadmin')loadSuperPanel();
+};
 
-  function setBar(id,n){
-    const pct=Math.min(100,(n/MAX)*100);
-    const el=$(id); el.style.width=pct+'%';
-    el.className='cap-fill '+(pct>=100?'full':pct>=75?'warn':'ok');
-  }
+async function loadMembers(){
+  const snap=await get(ref(db,'members'));
+  const data=snap.val()||{};
+  const members=Object.values(data);
+  $('mCount').textContent=members.length;
+  if(!members.length){$('membersList').innerHTML=`<div class="empty"><div class="empty-ic">👤</div>Aucun membre</div>`;return;}
+  let html='';
+  members.forEach(m=>{
+    const st=m.role==='superadmin'?'super':m.role==='admin'?'admin':m.password?'ok':'pend';
+    const sl=m.role==='superadmin'?'Super Admin':m.role==='admin'?'Admin':m.password?'Activé':'En attente';
+    html+=`<div class="mrow"><div class="m-info"><div class="m-name">${m.name}</div><div class="m-phone">📞 ${m.phone}</div></div><span class="m-status ms-${st==='super'?'super':st==='admin'?'admin':st==='ok'?'ok':'pend'}">${sl}</span><button class="bdel" onclick="deleteMember('${m.phone}','${m.name}')">Retirer</button></div>`;
+  });
+  $('membersList').innerHTML=html;
+}
 
-  function updateWaitBanner(data){
-    const cA=Object.values(data).filter(p=>p.status!=='waiting'&&p.aller==='oui').length;
-    const cR=Object.values(data).filter(p=>p.status!=='waiting'&&p.retour==='oui').length;
-    const aFull=cA>=MAX, rFull=cR>=MAX;
-    const banner=$('waitBanner');
-    if(aFull||rFull){
-      banner.innerHTML=`⏳ <strong>${aFull&&rFull?'Aller + Retour complets':aFull?'Aller complet':'Retour complet'}</strong> — Réservation en liste d'attente.`;
-      banner.style.display='block';
-    } else banner.style.display='none';
-  }
+// ── SUPER ADMIN ──
+async function loadSuperPanel(){
+  const cs=await get(ref(db,'settings/inviteCode'));
+  $('curCode').textContent=cs.exists()?cs.val():'BUS2024';
+  const snap=await get(ref(db,'members'));
+  const data=snap.val()||{};
+  let html='';
+  Object.values(data).forEach(m=>{
+    const st=m.role==='superadmin'?'super':m.role==='admin'?'admin':m.password?'ok':'pend';
+    const sl=m.role==='superadmin'?'Super Admin':m.role==='admin'?'Admin':m.password?'Activé':'En attente';
+    html+=`<div class="mrow"><div class="m-info"><div class="m-name">${m.name}</div><div class="m-phone">📞 ${m.phone}</div></div><span class="m-status ms-${st==='super'?'super':st==='admin'?'admin':st==='ok'?'ok':'pend'}">${sl}</span><button class="bdel" onclick="deleteMember('${m.phone}','${m.name}')">Retirer</button></div>`;
+  });
+  $('superList').innerHTML=html||`<div class="empty"><div class="empty-ic">👤</div>Aucun membre</div>`;
+}
 
-  // ── TABS ──
-  window.switchTab=function(tab){
-    ['reserver','liste','admin','super','log'].forEach(t=>{
-      const el=$(`tab-${t}`); if(el) el.style.display=t===tab?'block':'none';
-      const btn=$(`tab-btn-${t}`); if(btn) btn.classList.toggle('active',t===tab);
-    });
-    if(tab==='liste') renderList(cached);
-    if(tab==='admin') loadMembers();
-    if(tab==='super') loadSuperPanel();
-    if(tab==='log') loadLog();
-  };
+window.updateCode=async()=>{
+  const c=$('invCode').value.trim(); if(!c){toast('Entrez un code','e');return;}
+  await set(ref(db,'settings/inviteCode'),c);
+  $('curCode').textContent=c; $('invCode').value='';
+  await log('Code invitation modifié',c); toast('✅ Code mis à jour');
+};
+window.promote=async()=>{
+  const p=$('proPhone').value.trim(); if(!p){toast('Entrez un téléphone','e');return;}
+  const s=await get(ref(db,`members/${p}`)); if(!s.exists()){toast('Membre introuvable','e');return;}
+  await update(ref(db,`members/${p}`),{role:'admin'});
+  $('proPhone').value=''; await log('Promotion Admin',p); toast('✅ Promu Admin !');
+  loadSuperPanel(); loadMembers();
+};
+window.demote=async()=>{
+  const p=$('demPhone').value.trim(); if(!p){toast('Entrez un téléphone','e');return;}
+  await update(ref(db,`members/${p}`),{role:'member'});
+  $('demPhone').value=''; await log('Rétrogradation',p); toast('✅ Rétrogradé');
+  loadSuperPanel(); loadMembers();
+};
+window.changeSPass=async()=>{
+  const p=$('newSPass').value; if(!p||p.length<6){toast('Mot de passe trop court','e');return;}
+  await set(ref(db,'settings/superPass'),p);
+  $('newSPass').value=''; await log('Mot de passe Super Admin modifié'); toast('✅ Mot de passe mis à jour');
+};
 
-  // ── RESERVE ──
-  window.selStation=function(s){
-    selSt=s;
-    $('btnBiz').className='sbtn'+(s==='Bizerte'?' sb':'');
-    $('btnEla').className='sbtn'+(s==='El Alia'?' se':'');
-    if(CU) localStorage.setItem(`bp_${CU.phone}`,JSON.stringify({station:s}));
-  };
+// ── LOG ──
+async function loadLog(){
+  const snap=await get(query(ref(db,'activity_log'),orderByChild('ts'),limitToLast(60)));
+  const logs=Object.values(snap.val()||{}).sort((a,b)=>b.ts-a.ts);
+  if(!logs.length){$('logContent').innerHTML=`<div class="empty"><div class="empty-ic">📋</div>Aucune activité</div>`;return;}
+  const fmt=ts=>{const d=new Date(ts);return d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});};
+  $('logContent').innerHTML=logs.map(l=>`<div class="log-item"><div class="log-top"><span class="log-action">${l.action}</span><span class="log-time">${fmt(l.ts)}</span></div><div class="log-by">👤 ${l.by}${l.details?' — '+l.details:''}</div></div>`).join('');
+}
 
-  window.selTrip=function(trip,val){
-    choix[trip]=val;
-    ['oui','non'].forEach(v=>$(`b${trip[0].toUpperCase()}${v[0].toUpperCase()}`).classList.toggle('sel',v===val));
-  };
+// ── HIDDEN ADMIN TRIGGER (5 taps bottom-right) ──
+window.trigAdmin=()=>{
+  tapCount++; if(tapCount>=5){tapCount=0;['boxLogin','boxRegister','boxAdmin'].forEach(b=>hide(b));showFlex('boxAdmin');}
+  setTimeout(()=>{tapCount=0;},3000);
+};
 
-  window.submitRes=async function(){
-    if(!CU){showToast('Connectez-vous d\'abord','error');return;}
-    if(!selSt){showToast('Choisissez votre station','error');return;}
-    if(!choix.aller&&!choix.retour){showToast('Choisissez au moins un trajet','error');return;}
+// Init defaults
+get(ref(db,'settings/inviteCode')).then(s=>{if(!s.exists())set(ref(db,'settings/inviteCode'),'BUS2024');});
+get(ref(db,'settings/superPass')).then(s=>{if(!s.exists())set(ref(db,'settings/superPass'),'admin1234');});
 
-    const key=CU.phone;
-    const conf=cached[key];
-
-    // Count confirmed (not waiting)
-    const cA=Object.values(cached).filter(p=>p.status!=='waiting'&&p.aller==='oui'&&p.phone!==key).length;
-    const cR=Object.values(cached).filter(p=>p.status!=='waiting'&&p.retour==='oui'&&p.phone!==key).length;
-
-    const wantA=choix.aller==='oui';
-    const wantR=choix.retour==='oui';
-    const aFull=cA>=MAX, rFull=cR>=MAX;
-
-    let status='confirmed';
-    let msg='';
-
-    if(wantA&&wantR){
-      if(aFull&&rFull){status='waiting';msg='⏳ Aller + Retour complets — liste d\'attente';}
-      else if(aFull){status='waiting';msg='⏳ Aller complet — liste d\'attente';}
-      else if(rFull){status='waiting';msg='⏳ Retour complet — liste d\'attente';}
-      else{msg='✅ Aller + Retour réservés !';}
-    } else if(wantA){
-      if(aFull){status='waiting';msg='⏳ Aller complet — liste d\'attente';}
-      else msg='✅ Aller réservé !';
-    } else if(wantR){
-      if(rFull){status='waiting';msg='⏳ Retour complet — liste d\'attente';}
-      else msg='✅ Retour réservé !';
-    } else {
-      msg='✅ Annulation enregistrée';
-    }
-
-    const ts = conf ? conf.ts : Date.now(); // keep original ts for order
-
-    await set(ref(db,`reservations/${DK}/${key}`),{
-      nom:CU.name, phone:key, station:selSt,
-      aller:choix.aller||'non', retour:choix.retour||'non',
-      status, ts
-    });
-
-    await logActivity('Réservation',`${choix.aller==='oui'?'Aller':''}${choix.aller==='oui'&&choix.retour==='oui'?'+':''}${choix.retour==='oui'?'Retour':''} — ${selSt} — ${status}`);
-    showToast(msg, status==='waiting'?'warn':'success');
-  };
-
-  // ── LIST ──
-  window.setFilter=function(f){
-    curFilter=f;
-    const map={all:'fa',aller:'fa',retour:'fr',biz:'fbiz',ela:'fel',wait:'fw'};
-    ['all','aller','retour','biz','ela','wait'].forEach(id=>{
-      $(`f-${id}`).className='fbtn'+(f===id?' '+map[id]:'');
-    });
-    renderList(cached);
-  };
-
-  function renderList(data){
-    // Sort by ts ascending (first reserved = first)
-    let entries=Object.values(data).sort((a,b)=>(a.ts||0)-(b.ts||0));
-
-    const confirmed=entries.filter(p=>p.status!=='waiting'&&(p.aller==='oui'||p.retour==='oui'));
-    const waiting=entries.filter(p=>p.status==='waiting');
-
-    if(curFilter==='aller') entries=confirmed.filter(p=>p.aller==='oui');
-    else if(curFilter==='retour') entries=confirmed.filter(p=>p.retour==='oui');
-    else if(curFilter==='biz') entries=confirmed.filter(p=>p.station==='Bizerte');
-    else if(curFilter==='ela') entries=confirmed.filter(p=>p.station==='El Alia');
-    else if(curFilter==='wait') entries=waiting;
-    else entries=confirmed;
-
-    if(!entries.length){
-      $('listContent').innerHTML=`<div class="empty"><div class="empty-ic">🚌</div>Aucune réservation</div>`;
-      return;
-    }
-
-    if(curFilter==='wait'){
-      let html=`<div class="ltitle">⏳ Liste d'attente <span class="lbadge">${waiting.length}</span></div>`;
-      waiting.forEach((p,i)=>{
-        html+=`<div class="prow"><div class="pnum">${i+1}</div><div class="pinfo"><div class="pname">${p.nom}</div><div class="pst">📍 ${p.station}</div></div><div class="ppills">${p.aller==='oui'?'<span class="pill al">Aller</span>':''}${p.retour==='oui'?'<span class="pill re">Retour</span>':''}</div></div>`;
-      });
-      $('listContent').innerHTML=html; return;
-    }
-
-    const allers=entries.filter(p=>p.aller==='oui');
-    const retours=entries.filter(p=>p.retour==='oui');
-    let html='', idx=1;
-
-    if(allers.length){
-      html+=`<div class="ltitle">🌅 Aller <span class="lbadge">${allers.length}/29</span></div>`;
-      ['Bizerte','El Alia'].forEach(st=>{
-        const g=allers.filter(p=>p.station===st); if(!g.length)return;
-        const cls=st==='Bizerte'?'biz':'ela';
-        html+=`<div class="sgrp"><div class="sghdr"><div class="sdot ${cls}"></div><div class="sgname">📍 ${st} (${g.length})</div></div>`;
-        g.forEach((p,i)=>{
-          html+=`<div class="prow"><div class="pnum">${i+1}</div><div class="pinfo"><div class="pname">${p.nom}</div><div class="pst">📍 ${p.station}</div></div><span class="pill al">Aller</span></div>`;
-        });
-        html+='</div>';
-      });
-    }
-    if(retours.length){
-      if(allers.length) html+=`<div class="sdiv"><span>🌆 Retour • ${retours.length}/29</span></div>`;
-      else html+=`<div class="ltitle">🌆 Retour <span class="lbadge">${retours.length}/29</span></div>`;
-      ['El Alia','Bizerte'].forEach(st=>{
-        const g=retours.filter(p=>p.station===st); if(!g.length)return;
-        const cls=st==='Bizerte'?'biz':'ela';
-        html+=`<div class="sgrp"><div class="sghdr"><div class="sdot ${cls}"></div><div class="sgname">📍 ${st} (${g.length})</div></div>`;
-        g.forEach((p,i)=>{
-          html+=`<div class="prow"><div class="pnum">${i+1}</div><div class="pinfo"><div class="pname">${p.nom}</div><div class="pst">📍 ${p.station}</div></div><span class="pill re">Retour</span></div>`;
-        });
-        html+='</div>';
-      });
-    }
-    $('listContent').innerHTML=html;
-  }
-
-  // ── ADMIN ──
-  window.addMember=async()=>{
-    const name=$('aMemberName').value.trim();
-    const phone=$('aMemberPhone').value.trim();
-    if(!name||!phone){showToast('Nom et téléphone requis','error');return;}
-    const snap=await get(ref(db,`members/${phone}`));
-    if(snap.exists()){showToast('Ce numéro existe déjà','error');return;}
-    await set(ref(db,`members/${phone}`),{name,phone,role:'member',createdAt:Date.now()});
-    $('aMemberName').value=''; $('aMemberPhone').value='';
-    await logActivity('Ajout membre',`${name} (${phone})`);
-    showToast(`✅ ${name} ajouté !`);
-    loadMembers();
-  };
-
-  window.deleteMember=async(phone,name)=>{
-    if(!confirm(`Supprimer ${name} ?`))return;
-    await remove(ref(db,`members/${phone}`));
-    await logActivity('Suppression membre',`${name} (${phone})`);
-    showToast('Membre supprimé','warn');
-    loadMembers(); if(CU.role==='superadmin')loadSuperPanel();
-  };
-
-  async function loadMembers(){
-    const snap=await get(ref(db,'members'));
-    const data=snap.val()||{};
-    const members=Object.values(data).filter(m=>m.role==='member'||m.role==='admin');
-    $('mCount').textContent=members.length;
-    if(!members.length){$('membersList').innerHTML=`<div class="empty"><div class="empty-ic">👤</div>Aucun membre</div>`;return;}
-    let html='';
-    members.forEach(m=>{
-      const st=m.role==='admin'?'adm':m.password?'ok':'pend';
-      const stl=m.role==='admin'?'Admin':m.password?'Activé':'En attente';
-      html+=`<div class="mrow"><div class="minfo"><div class="mname">${m.name}</div><div class="mphone">📞 ${m.phone}</div></div><span class="mst ${st}">${stl}</span><button class="bdel" onclick="deleteMember('${m.phone}','${m.name}')">Retirer</button></div>`;
-    });
-    $('membersList').innerHTML=html;
-  }
-
-  // ── SUPER ADMIN ──
-  async function loadSuperPanel(){
-    // Load invite code
-    const cs=await get(ref(db,'settings/inviteCode'));
-    const code=cs.exists()?cs.val():'BUS2024';
-    $('currentInviteCode').textContent=code;
-
-    // Load all members
-    const snap=await get(ref(db,'members'));
-    const data=snap.val()||{};
-    const all=Object.values(data);
-    let html='';
-    all.forEach(m=>{
-      const st=m.role==='superadmin'?'sadm':m.role==='admin'?'adm':m.password?'ok':'pend';
-      const stl=m.role==='superadmin'?'Super Admin':m.role==='admin'?'Admin':m.password?'Activé':'En attente';
-      html+=`<div class="mrow"><div class="minfo"><div class="mname">${m.name}</div><div class="mphone">📞 ${m.phone}</div></div><span class="mst ${st}">${stl}</span><button class="bdel" onclick="deleteMember('${m.phone}','${m.name}')">Retirer</button></div>`;
-    });
-    $('superMembersList').innerHTML=html||`<div class="empty"><div class="empty-ic">👤</div>Aucun membre</div>`;
-  }
-
-  window.updateInviteCode=async()=>{
-    const code=$('inviteCodeInput').value.trim();
-    if(!code){showToast('Entrez un code','error');return;}
-    await set(ref(db,'settings/inviteCode'),code);
-    $('currentInviteCode').textContent=code;
-    $('inviteCodeInput').value='';
-    await logActivity('Changement code invitation',code);
-    showToast('✅ Code mis à jour');
-  };
-
-  window.promoteToAdmin=async()=>{
-    const phone=$('promotePhone').value.trim();
-    if(!phone){showToast('Entrez un téléphone','error');return;}
-    const snap=await get(ref(db,`members/${phone}`));
-    if(!snap.exists()){showToast('Membre introuvable','error');return;}
-    await update(ref(db,`members/${phone}`),{role:'admin'});
-    $('promotePhone').value='';
-    await logActivity('Promotion Admin',phone);
-    showToast('✅ Promu Admin !');
-    loadSuperPanel(); loadMembers();
-  };
-
-  window.demoteAdmin=async()=>{
-    const phone=$('demotePhone').value.trim();
-    if(!phone){showToast('Entrez un téléphone','error');return;}
-    await update(ref(db,`members/${phone}`),{role:'member'});
-    $('demotePhone').value='';
-    await logActivity('Rétrogradation',phone);
-    showToast('✅ Rétrogradé');
-    loadSuperPanel(); loadMembers();
-  };
-
-  window.changeSuperPass=async()=>{
-    const pass=$('newSuperPass').value;
-    if(!pass||pass.length<6){showToast('Mot de passe trop court','error');return;}
-    await set(ref(db,'settings/superPass'),pass);
-    $('newSuperPass').value='';
-    await logActivity('Changement mot de passe Super Admin');
-    showToast('✅ Mot de passe mis à jour');
-  };
-
-  // ── LOG ──
-  async function loadLog(){
-    const snap=await get(query(ref(db,'activity_log'),orderByChild('ts'),limitToLast(50)));
-    const data=snap.val()||{};
-    const logs=Object.values(data).sort((a,b)=>b.ts-a.ts);
-    if(!logs.length){$('logContent').innerHTML=`<div class="empty"><div class="empty-ic">📋</div>Aucune activité</div>`;return;}
-    const fmt=ts=>{const d=new Date(ts);return d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});};
-    let html='';
-    logs.forEach(l=>{
-      html+=`<div class="log-row"><div class="log-top"><span class="log-action">${l.action}</span><span class="log-time">${fmt(l.ts)}</span></div><div class="log-by">👤 ${l.by} ${l.details?'— '+l.details:''}</div></div>`;
-    });
-    $('logContent').innerHTML=html;
-  }
-
-  // ── HIDDEN ADMIN TRIGGER ──
-  window.triggerAdmin=()=>{
-    tapCount++;
-    if(tapCount>=5){tapCount=0;hide('cardLogin');showCard('cardAdminLogin');}
-    setTimeout(()=>{tapCount=0;},3000);
-  };
-
-  // Init default settings
-  get(ref(db,'settings/inviteCode')).then(s=>{if(!s.exists())set(ref(db,'settings/inviteCode'),'BUS2024');});
-  get(ref(db,'settings/superPass')).then(s=>{if(!s.exists())set(ref(db,'settings/superPass'),'admin1234');});
-
-  // Enter key
-  $('lPass').addEventListener('keydown',e=>{if(e.key==='Enter')window.doLogin();});
-  $('rPass2').addEventListener('keydown',e=>{if(e.key==='Enter')window.doRegister();});
-  $('alPass').addEventListener('keydown',e=>{if(e.key==='Enter')window.doAdminLogin();});
-
-  window.selStation=window.selStation;
+// Enter keys
+$('lPass').addEventListener('keydown',e=>{if(e.key==='Enter')window.doLogin();});
+$('rPass2').addEventListener('keydown',e=>{if(e.key==='Enter')window.doRegister();});
+$('alPass').addEventListener('keydown',e=>{if(e.key==='Enter')window.doAdminLogin();});
 </script>
 </body>
 </html>
