@@ -436,7 +436,10 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 
     <!-- ── RÉSERVER ── -->
     <div id="pv-reserver">
-      <div class="notice">🕖 Les réservations ouvrent à partir de 19h chaque soir</div>
+      <div class="notice" id="noticeOpen" style="display:none">🕖 Les réservations ouvrent à partir de 19h chaque soir</div>
+      <div class="notice" style="background:rgba(247,97,79,0.07);border-color:rgba(247,97,79,0.2);color:var(--red);display:none" id="noticeClosed">
+        🔒 Réservations fermées · Ouverture à 19h00
+      </div>
       <div class="wait-alert" id="waitAlert">
         ⏳ <strong>Attention !</strong> <span id="waitMsg">Le bus est complet.</span> Votre réservation sera en liste d'attente.
       </div>
@@ -552,6 +555,21 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
         </div>
       </div>
 
+      <div class="acard" style="border-color:rgba(247,97,79,0.2)">
+        <div class="acard-title" style="color:var(--red)">🗑️ Purge des réservations</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;">
+          <button class="badd danger" onclick="purgeToday()" style="padding:12px;font-size:0.82rem;">
+            🗑️ Purger le jour
+          </button>
+          <button class="badd danger" onclick="manualPurge()" style="padding:12px;font-size:0.82rem;">
+            🗑️ Purger tout
+          </button>
+        </div>
+        <div style="margin-top:8px;font-size:0.7rem;color:var(--muted)">
+          "Purger le jour" efface les réservations de la date en cours. "Purger tout" efface tous les jours passés.
+        </div>
+      </div>
+
       <div class="divl"></div>
       <div class="sub-title">Tous les membres</div>
       <div id="superList"><div class="loading"><div class="spinner"></div></div></div>
@@ -591,16 +609,41 @@ let curFilter = 'all';
 let cached = {};
 let tapCount = 0;
 
-// ── DATE ──
-const tom = new Date();
-tom.setDate(tom.getDate()+1);
+// ── DATE & FENÊTRE DE RÉSERVATION ──
+// Règle : ouvert de 19h00 à 07h00 le lendemain
+// Entre 19h-minuit  → réserve pour DEMAIN
+// Entre minuit-07h  → réserve pour AUJOURD'HUI
+// Entre 07h-19h     → FERMÉ
 const jours = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
 const mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-const DK = tom.toISOString().split('T')[0].replace(/-/g,'_');
-const resRef = ref(db, `reservations/${DK}`);
 
-document.getElementById('tomorrowDate').textContent =
-  jours[tom.getDay()] + ' ' + tom.getDate() + ' ' + mois[tom.getMonth()] + ' ' + tom.getFullYear();
+function getReservationTarget() {
+  const now = new Date();
+  const h = now.getHours();
+  // 00h-06h59 → réserve pour AUJOURD'HUI (même date)
+  if (h < 7) {
+    return { date: new Date(now), open: true };
+  }
+  // 07h-18h59 → FERMÉ
+  if (h < 19) {
+    // Affiche le prochain jour ouvrable comme date cible
+    const next = new Date(now);
+    next.setDate(next.getDate()+1);
+    return { date: next, open: false };
+  }
+  // 19h-23h59 → réserve pour DEMAIN
+  const next = new Date(now);
+  next.setDate(next.getDate()+1);
+  return { date: next, open: true };
+}
+
+const target = getReservationTarget();
+const DK = target.date.toISOString().split('T')[0].replace(/-/g,'_');
+const resRef = ref(db, `reservations/${DK}`);
+const RESERVATIONS_OPEN = target.open;
+
+const fmtDate = d => jours[d.getDay()] + ' ' + d.getDate() + ' ' + mois[d.getMonth()] + ' ' + d.getFullYear();
+document.getElementById('tomorrowDate').textContent = fmtDate(target.date);
 
 // ── HELPERS ──
 const $ = id => document.getElementById(id);
@@ -676,6 +719,15 @@ function enterApp() {
   else if(CU.role==='admin'){rc.textContent='Admin';rc.className='role-chip rc-admin';show('tb-admin');show('tb-log');}
   else{rc.textContent='Membre';rc.className='role-chip rc-member';}
 
+  // Show open/closed notice
+  if(RESERVATIONS_OPEN){
+    show('noticeOpen');
+  } else {
+    show('noticeClosed');
+    const btn=document.querySelector('.btn-confirm');
+    if(btn){ btn.disabled=true; btn.style.opacity='0.4'; btn.style.cursor='not-allowed'; }
+  }
+
   try{const s=JSON.parse(localStorage.getItem(`bp_${CU.phone}`)||'{}');if(s.station)selSt(s.station);}catch(e){}
 
   onValue(resRef, snap=>{
@@ -699,11 +751,10 @@ window.doLogout=async()=>{
 
 // ── CAPACITY ──
 function updateCap(data) {
-  // Count UNIQUE persons (not waiting) who reserved aller OR retour
   const confirmed=Object.values(data).filter(p=>p.status!=='waiting');
   const cA=confirmed.filter(p=>p.aller==='oui').length;
   const cR=confirmed.filter(p=>p.retour==='oui').length;
-  // Unique persons = those with aller OR retour reserved
+  // Unique persons = 1 place per person regardless of aller+retour
   const unique=confirmed.filter(p=>p.aller==='oui'||p.retour==='oui').length;
 
   $('occVal').textContent=unique;
@@ -767,6 +818,7 @@ window.selTrip=function(trip,val){
 
 window.submitRes=async function(){
   if(!CU){toast('Connectez-vous d\'abord','e');return;}
+  if(!RESERVATIONS_OPEN){toast('⏰ Réservations fermées (19h–07h uniquement)','e');return;}
   if(!selStation){toast('Choisissez votre station','e');return;}
   if(!choix.aller&&!choix.retour){toast('Choisissez au moins un trajet','e');return;}
 
@@ -955,6 +1007,45 @@ window.trigAdmin=()=>{
 // Init defaults
 get(ref(db,'settings/inviteCode')).then(s=>{if(!s.exists())set(ref(db,'settings/inviteCode'),'BUS2024');});
 get(ref(db,'settings/superPass')).then(s=>{if(!s.exists())set(ref(db,'settings/superPass'),'admin1234');});
+
+// AUTO PURGE à 19h : supprime les réservations des jours passés
+async function autoPurgeOldReservations() {
+  const now = new Date();
+  if(now.getHours() !== 19) return;
+  const today = now.toISOString().split('T')[0];
+  const lastSnap = await get(ref(db,'settings/lastPurge'));
+  if(lastSnap.exists() && lastSnap.val() === today) return;
+  const allSnap = await get(ref(db,'reservations'));
+  if(!allSnap.exists()) return;
+  const todayKey = today.replace(/-/g,'_');
+  for(const dk of Object.keys(allSnap.val())){
+    if(dk < todayKey) await remove(ref(db,`reservations/${dk}`));
+  }
+  await set(ref(db,'settings/lastPurge'), today);
+}
+autoPurgeOldReservations();
+
+// PURGE MANUELLE : tous les jours passés
+window.manualPurge = async function(){
+  if(!confirm('Purger toutes les réservations passées ?')) return;
+  const allSnap = await get(ref(db,'reservations'));
+  if(!allSnap.exists()){toast('Aucune réservation à purger','w');return;}
+  const todayKey = new Date().toISOString().split('T')[0].replace(/-/g,'_');
+  let purged=0;
+  for(const dk of Object.keys(allSnap.val())){
+    if(dk < todayKey){ await remove(ref(db,`reservations/${dk}`)); purged++; }
+  }
+  await log('Purge manuelle', purged+' jour(s)');
+  toast('Purge : '+purged+' jour(s) supprimé(s)','s');
+};
+
+// PURGE DU JOUR : réservations du jour en cours
+window.purgeToday = async function(){
+  if(!confirm('Purger les réservations de '+fmtDate(target.date)+' ?')) return;
+  await remove(ref(db,'reservations/'+DK));
+  await log('Purge du jour', DK);
+  toast('Réservations du jour supprimées','s');
+};
 
 // Enter keys
 $('lPass').addEventListener('keydown',e=>{if(e.key==='Enter')window.doLogin();});
