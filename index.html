@@ -7,219 +7,356 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0f1117;
-    --card: #1a1d27;
-    --card2: #20243a;
-    --accent: #4f8ef7;
-    --green: #3dd68c;
-    --red: #f7614f;
-    --orange: #f7a14f;
-    --text: #f0f2ff;
-    --muted: #7b82a0;
+    --bg: #0f1117; --card: #1a1d27; --card2: #20243a;
+    --accent: #4f8ef7; --green: #3dd68c; --red: #f7614f;
+    --orange: #f7a14f; --text: #f0f2ff; --muted: #7b82a0;
     --border: rgba(255,255,255,0.07);
   }
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100dvh; padding-bottom: 40px; }
+  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100dvh; }
 
-  .header {
-    background: linear-gradient(135deg, #1a1d27 0%, #0f1117 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 18px 20px 14px;
-    position: sticky; top: 0; z-index: 100;
+  /* ─── AUTH SCREEN ─── */
+  .auth-screen {
+    min-height:100dvh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; padding:24px;
   }
-  .header-top { display:flex; align-items:center; justify-content:space-between; margin-bottom: 14px; }
-  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.25rem; }
-  .logo span { color: var(--accent); }
-  .date-badge { background: var(--card2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 13px; font-size: 0.75rem; color: var(--muted); }
+  .auth-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.8rem; margin-bottom:6px; }
+  .auth-logo span { color:var(--accent); }
+  .auth-sub { font-size:0.85rem; color:var(--muted); margin-bottom:32px; text-align:center; }
+  .auth-card { background:var(--card); border:1px solid var(--border); border-radius:22px; padding:24px; width:100%; max-width:360px; }
+  .auth-title { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; margin-bottom:4px; }
+  .auth-desc { font-size:0.78rem; color:var(--muted); margin-bottom:20px; line-height:1.5; }
+  .field { margin-bottom:12px; }
+  .field label { font-size:0.72rem; font-family:'Syne',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--muted); display:block; margin-bottom:6px; }
+  .field input { width:100%; background:var(--bg); border:1.5px solid var(--border); border-radius:12px; padding:12px 14px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.95rem; outline:none; transition:border-color 0.2s; }
+  .field input:focus { border-color:var(--accent); }
+  .field input::placeholder { color:var(--muted); }
+  .btn-primary { width:100%; padding:14px; background:linear-gradient(135deg,var(--accent),#6fa8f9); border:none; border-radius:13px; color:#fff; font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer; transition:all 0.2s; box-shadow:0 6px 20px rgba(79,142,247,0.3); margin-top:4px; }
+  .btn-primary:active { transform:scale(0.98); }
+  .btn-secondary { width:100%; padding:12px; background:transparent; border:1.5px solid var(--border); border-radius:13px; color:var(--muted); font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:600; cursor:pointer; margin-top:8px; transition:all 0.2s; }
+  .btn-secondary:hover { border-color:var(--accent); color:var(--accent); }
+  .auth-toggle { text-align:center; margin-top:16px; font-size:0.8rem; color:var(--muted); }
+  .auth-toggle a { color:var(--accent); cursor:pointer; text-decoration:none; font-weight:600; }
+  .error-msg { background:rgba(247,97,79,0.1); border:1px solid rgba(247,97,79,0.3); color:var(--red); border-radius:10px; padding:10px 14px; font-size:0.8rem; margin-bottom:12px; display:none; }
 
-  .route-bar {
-    background: var(--card2); border: 1px solid var(--border); border-radius: 12px;
-    padding: 10px 14px; display: flex; align-items: center; justify-content: center;
-    gap: 8px; font-size: 0.8rem; font-family: 'Syne', sans-serif; font-weight: 600; margin-bottom: 12px;
+  /* ─── MAIN APP ─── */
+  #appScreen { display:none; padding-bottom:40px; }
+
+  /* HEADER */
+  .header { background:linear-gradient(135deg,#1a1d27 0%,#0f1117 100%); border-bottom:1px solid var(--border); padding:14px 18px; position:sticky; top:0; z-index:100; }
+  .header-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .header-left { display:flex; align-items:center; gap:10px; }
+  .logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; }
+  .logo span { color:var(--accent); }
+  .occupancy-badge {
+    display:flex; align-items:center; gap:5px;
+    background:var(--card2); border:1px solid var(--border);
+    border-radius:10px; padding:5px 10px;
   }
-  .route-stop { color: var(--text); }
-  .route-arrow { color: var(--muted); font-size: 0.7rem; }
-  .route-stop.work { color: var(--accent); }
-
-  .capacity-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .cap-card { background: var(--card2); border: 1px solid var(--border); border-radius: 14px; padding: 11px 14px; }
-  .cap-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-  .cap-bar { height: 5px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; margin-bottom: 5px; }
-  .cap-fill { height: 100%; border-radius: 99px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
-  .cap-fill.ok { background: linear-gradient(90deg, var(--green), #6df7b0); }
-  .cap-fill.warn { background: linear-gradient(90deg, #f7c14f, var(--orange)); }
-  .cap-fill.full { background: linear-gradient(90deg, var(--red), #f7914f); }
-  .cap-numbers { font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; }
-  .cap-numbers small { font-size: 0.68rem; color: var(--muted); font-family: 'DM Sans', sans-serif; font-weight: 400; }
-
-  .main { padding: 18px 16px; max-width: 480px; margin: 0 auto; }
-
-  .tabs { display: flex; gap: 8px; background: var(--card); border-radius: 14px; padding: 5px; margin-bottom: 18px; border: 1px solid var(--border); }
-  .tab { flex: 1; padding: 10px 6px; border: none; background: transparent; color: var(--muted); font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
-  .tab.active { background: var(--accent); color: #fff; box-shadow: 0 4px 16px rgba(79,142,247,0.3); }
-
-  .notice { background: rgba(79,142,247,0.08); border: 1px solid rgba(79,142,247,0.2); border-radius: 12px; padding: 11px 14px; font-size: 0.78rem; color: var(--accent); margin-bottom: 16px; text-align: center; }
-  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); display: inline-block; margin-right: 5px; animation: pulse 2s infinite; }
+  .occupancy-dot { width:7px; height:7px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; }
+  .occupancy-num { font-family:'Syne',sans-serif; font-weight:800; font-size:0.95rem; }
+  .occupancy-label { font-size:0.68rem; color:var(--muted); }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  .section-card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px; margin-bottom: 14px; }
-  .section-label { font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 12px; }
+  .header-right { display:flex; align-items:center; gap:8px; }
+  .user-badge { background:var(--card2); border:1px solid var(--border); border-radius:20px; padding:5px 12px; font-size:0.73rem; color:var(--muted); max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .btn-logout { background:transparent; border:1px solid var(--border); border-radius:8px; padding:5px 9px; color:var(--muted); font-size:0.75rem; cursor:pointer; transition:all 0.2s; }
+  .btn-logout:hover { border-color:var(--red); color:var(--red); }
 
-  .name-input { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 13px 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 1rem; outline: none; transition: border-color 0.2s; }
-  .name-input:focus { border-color: var(--accent); }
-  .name-input::placeholder { color: var(--muted); }
+  .route-bar { background:var(--card2); border:1px solid var(--border); border-radius:11px; padding:8px 14px; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.76rem; font-family:'Syne',sans-serif; font-weight:600; margin-bottom:11px; }
+  .route-stop { color:var(--text); }
+  .route-arrow { color:var(--muted); font-size:0.65rem; }
+  .route-stop.work { color:var(--accent); }
 
-  .station-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .station-btn { padding: 14px 10px; border: 1.5px solid var(--border); border-radius: 13px; background: var(--bg); color: var(--muted); font-family: 'Syne', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: all 0.2s; text-align: center; }
-  .station-btn .station-icon { font-size: 1.4rem; display: block; margin-bottom: 5px; }
-  .station-btn.selected-bizerte { border-color: var(--orange); background: rgba(247,161,79,0.12); color: var(--orange); box-shadow: 0 4px 16px rgba(247,161,79,0.2); }
-  .station-btn.selected-elalia { border-color: var(--green); background: rgba(61,214,140,0.12); color: var(--green); box-shadow: 0 4px 16px rgba(61,214,140,0.2); }
+  .capacity-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .cap-card { background:var(--card2); border:1px solid var(--border); border-radius:13px; padding:10px 13px; }
+  .cap-label { font-size:0.66rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:5px; }
+  .cap-bar { height:5px; background:rgba(255,255,255,0.08); border-radius:99px; overflow:hidden; margin-bottom:4px; }
+  .cap-fill { height:100%; border-radius:99px; transition:width 0.5s cubic-bezier(.4,0,.2,1); }
+  .cap-fill.ok { background:linear-gradient(90deg,var(--green),#6df7b0); }
+  .cap-fill.warn { background:linear-gradient(90deg,#f7c14f,var(--orange)); }
+  .cap-fill.full { background:linear-gradient(90deg,var(--red),#f7914f); }
+  .cap-numbers { font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:700; }
+  .cap-numbers small { font-size:0.66rem; color:var(--muted); font-family:'DM Sans',sans-serif; font-weight:400; }
 
-  .trip-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-  .trip-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
-  .trip-icon.aller { background: rgba(79,142,247,0.15); }
-  .trip-icon.retour { background: rgba(247,97,79,0.15); }
-  .trip-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; }
-  .trip-route { font-size: 0.72rem; color: var(--muted); }
+  /* TABS */
+  .main { padding:16px; max-width:480px; margin:0 auto; }
+  .tabs { display:flex; gap:8px; background:var(--card); border-radius:13px; padding:5px; margin-bottom:16px; border:1px solid var(--border); }
+  .tab { flex:1; padding:9px 4px; border:none; background:transparent; color:var(--muted); font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:600; border-radius:9px; cursor:pointer; transition:all 0.2s; }
+  .tab.active { background:var(--accent); color:#fff; box-shadow:0 4px 14px rgba(79,142,247,0.3); }
+  .tab.admin-tab.active { background:var(--orange); box-shadow:0 4px 14px rgba(247,161,79,0.3); }
 
-  .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .btn-trip { padding: 13px; border: 1.5px solid transparent; border-radius: 13px; font-family: 'Syne', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-  .btn-trip.reserve { background: rgba(61,214,140,0.1); border-color: rgba(61,214,140,0.25); color: var(--green); }
-  .btn-trip.reserve.selected { background: var(--green); color: #0f1117; box-shadow: 0 6px 20px rgba(61,214,140,0.3); }
-  .btn-trip.annuler { background: rgba(247,97,79,0.1); border-color: rgba(247,97,79,0.2); color: var(--red); }
-  .btn-trip.annuler.selected { background: var(--red); color: #fff; box-shadow: 0 6px 20px rgba(247,97,79,0.3); }
+  .notice { background:rgba(79,142,247,0.08); border:1px solid rgba(79,142,247,0.2); border-radius:11px; padding:10px 14px; font-size:0.75rem; color:var(--accent); margin-bottom:14px; text-align:center; }
 
-  .btn-submit { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent), #6fa8f9); border: none; border-radius: 14px; color: #fff; font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 4px; transition: all 0.2s; box-shadow: 0 6px 20px rgba(79,142,247,0.3); }
-  .btn-submit:active { transform: scale(0.98); }
+  /* RESERVE */
+  .section-card { background:var(--card); border:1px solid var(--border); border-radius:17px; padding:16px; margin-bottom:12px; }
+  .section-label { font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin-bottom:10px; }
+  .station-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .station-btn { padding:12px 10px; border:1.5px solid var(--border); border-radius:12px; background:var(--bg); color:var(--muted); font-family:'Syne',sans-serif; font-size:0.85rem; font-weight:700; cursor:pointer; transition:all 0.2s; text-align:center; }
+  .station-btn .si { font-size:1.2rem; display:block; margin-bottom:3px; }
+  .station-btn.sel-biz { border-color:var(--orange); background:rgba(247,161,79,0.12); color:var(--orange); box-shadow:0 4px 14px rgba(247,161,79,0.2); }
+  .station-btn.sel-ela { border-color:var(--green); background:rgba(61,214,140,0.12); color:var(--green); box-shadow:0 4px 14px rgba(61,214,140,0.2); }
+  .trip-header { display:flex; align-items:center; gap:10px; margin-bottom:11px; }
+  .trip-icon { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:0.95rem; flex-shrink:0; }
+  .trip-icon.aller { background:rgba(79,142,247,0.15); }
+  .trip-icon.retour { background:rgba(247,97,79,0.15); }
+  .trip-title { font-family:'Syne',sans-serif; font-weight:700; font-size:0.93rem; }
+  .trip-route { font-size:0.7rem; color:var(--muted); }
+  .btn-group { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .btn-trip { padding:12px; border:1.5px solid transparent; border-radius:12px; font-family:'Syne',sans-serif; font-size:0.85rem; font-weight:700; cursor:pointer; transition:all 0.2s; }
+  .btn-trip.reserve { background:rgba(61,214,140,0.1); border-color:rgba(61,214,140,0.25); color:var(--green); }
+  .btn-trip.reserve.selected { background:var(--green); color:#0f1117; box-shadow:0 5px 18px rgba(61,214,140,0.3); }
+  .btn-trip.annuler { background:rgba(247,97,79,0.1); border-color:rgba(247,97,79,0.2); color:var(--red); }
+  .btn-trip.annuler.selected { background:var(--red); color:#fff; box-shadow:0 5px 18px rgba(247,97,79,0.3); }
+  .btn-submit { width:100%; padding:14px; background:linear-gradient(135deg,var(--accent),#6fa8f9); border:none; border-radius:13px; color:#fff; font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer; margin-top:4px; transition:all 0.2s; box-shadow:0 5px 18px rgba(79,142,247,0.3); }
+  .btn-submit:active { transform:scale(0.98); }
 
-  .list-section-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
-  .list-badge { background: var(--card2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 0.72rem; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+  /* LIST */
+  .filter-bar { display:flex; gap:7px; margin-bottom:13px; flex-wrap:wrap; }
+  .filter-btn { padding:6px 12px; border-radius:20px; border:1.5px solid var(--border); background:transparent; color:var(--muted); font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:700; cursor:pointer; transition:all 0.2s; }
+  .filter-btn.fa { border-color:var(--accent); background:rgba(79,142,247,0.1); color:var(--accent); }
+  .filter-btn.fr { border-color:var(--red); background:rgba(247,97,79,0.1); color:var(--red); }
+  .filter-btn.fb { border-color:var(--orange); background:rgba(247,161,79,0.1); color:var(--orange); }
+  .filter-btn.fe { border-color:var(--green); background:rgba(61,214,140,0.1); color:var(--green); }
+  .list-title { font-family:'Syne',sans-serif; font-weight:800; font-size:0.95rem; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
+  .list-badge { background:var(--card2); border:1px solid var(--border); border-radius:20px; padding:3px 10px; font-size:0.68rem; color:var(--muted); font-family:'DM Sans',sans-serif; }
+  .sgroup { margin-bottom:11px; }
+  .sgroup-hdr { display:flex; align-items:center; gap:7px; margin-bottom:7px; }
+  .sdot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .sdot.biz { background:var(--orange); } .sdot.ela { background:var(--green); }
+  .sgroup-name { font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; }
+  .person-row { background:var(--card); border:1px solid var(--border); border-radius:11px; padding:10px 13px; margin-bottom:5px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .person-info { flex:1; min-width:0; }
+  .person-name { font-weight:500; font-size:0.86rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .person-station { font-size:0.68rem; color:var(--muted); margin-top:1px; }
+  .trip-pill { border-radius:6px; padding:3px 8px; font-size:0.66rem; font-weight:600; font-family:'Syne',sans-serif; }
+  .trip-pill.aller { background:rgba(79,142,247,0.15); color:var(--accent); }
+  .trip-pill.retour { background:rgba(247,97,79,0.15); color:var(--red); }
+  .seg-div { display:flex; align-items:center; gap:10px; margin:14px 0 10px; }
+  .seg-div span { font-family:'Syne',sans-serif; font-size:0.76rem; font-weight:700; color:var(--muted); white-space:nowrap; }
+  .seg-div::before,.seg-div::after { content:''; flex:1; height:1px; background:var(--border); }
+  .empty-state { text-align:center; padding:36px 20px; color:var(--muted); font-size:0.86rem; }
+  .empty-icon { font-size:2.3rem; margin-bottom:8px; }
 
-  .station-group { margin-bottom: 12px; }
-  .station-group-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-  .station-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-  .station-dot.bizerte { background: var(--orange); }
-  .station-dot.elalia { background: var(--green); }
-  .station-group-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; }
+  /* ADMIN */
+  .admin-header { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+  .admin-title { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; }
+  .admin-badge { background:rgba(247,161,79,0.15); border:1px solid rgba(247,161,79,0.3); color:var(--orange); border-radius:8px; padding:3px 10px; font-size:0.72rem; font-family:'Syne',sans-serif; font-weight:700; }
+  .member-row { background:var(--card); border:1px solid var(--border); border-radius:11px; padding:11px 14px; margin-bottom:7px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .member-info { flex:1; min-width:0; }
+  .member-name { font-weight:600; font-size:0.88rem; }
+  .member-phone { font-size:0.72rem; color:var(--muted); margin-top:2px; }
+  .member-status { font-size:0.68rem; padding:3px 9px; border-radius:20px; font-family:'Syne',sans-serif; font-weight:700; }
+  .member-status.active { background:rgba(61,214,140,0.15); color:var(--green); }
+  .member-status.pending { background:rgba(247,161,79,0.15); color:var(--orange); }
+  .btn-del { background:rgba(247,97,79,0.1); border:1px solid rgba(247,97,79,0.2); color:var(--red); border-radius:8px; padding:6px 10px; font-size:0.75rem; cursor:pointer; transition:all 0.2s; font-family:'Syne',sans-serif; font-weight:700; }
+  .btn-del:hover { background:var(--red); color:#fff; }
+  .add-member-form { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; margin-bottom:14px; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+  .admin-input { width:100%; background:var(--bg); border:1.5px solid var(--border); border-radius:11px; padding:11px 13px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.88rem; outline:none; transition:border-color 0.2s; }
+  .admin-input:focus { border-color:var(--orange); }
+  .admin-input::placeholder { color:var(--muted); }
+  .btn-add { width:100%; padding:12px; background:linear-gradient(135deg,var(--orange),#f7c14f); border:none; border-radius:11px; color:#0f1117; font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; cursor:pointer; transition:all 0.2s; }
+  .divider-line { height:1px; background:var(--border); margin:16px 0; }
+  .admin-section-title { font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:10px; }
 
-  .person-row { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 11px 14px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
-  .person-name { font-weight: 500; font-size: 0.88rem; }
-  .trip-pill { border-radius: 6px; padding: 3px 8px; font-size: 0.68rem; font-weight: 600; font-family: 'Syne', sans-serif; }
-  .trip-pill.aller { background: rgba(79,142,247,0.15); color: var(--accent); }
-  .trip-pill.retour { background: rgba(247,97,79,0.15); color: var(--red); }
+  /* LOADING */
+  .loading { text-align:center; padding:28px; color:var(--muted); }
+  .spinner { width:24px; height:24px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 8px; }
+  @keyframes spin { to{transform:rotate(360deg)} }
 
-  .segment-divider { display: flex; align-items: center; gap: 10px; margin: 18px 0 12px; }
-  .segment-divider span { font-family: 'Syne', sans-serif; font-size: 0.78rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
-  .segment-divider::before, .segment-divider::after { content:''; flex:1; height:1px; background: var(--border); }
+  /* TOAST */
+  .toast { position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--card); border:1px solid var(--border); border-radius:13px; padding:12px 20px; font-size:0.86rem; font-weight:500; box-shadow:0 10px 38px rgba(0,0,0,0.4); z-index:999; transition:transform 0.35s cubic-bezier(.4,0,.2,1); white-space:nowrap; }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+  .toast.success { border-color:rgba(61,214,140,0.4); color:var(--green); }
+  .toast.error { border-color:rgba(247,97,79,0.4); color:var(--red); }
 
-  .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 0.88rem; }
-  .empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
-
-  .loading { text-align: center; padding: 30px; color: var(--muted); font-size: 0.88rem; }
-  .spinner { width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 13px 22px; font-size: 0.88rem; font-weight: 500; box-shadow: 0 10px 40px rgba(0,0,0,0.4); z-index: 999; transition: transform 0.35s cubic-bezier(.4,0,.2,1); white-space: nowrap; }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-  .toast.success { border-color: rgba(61,214,140,0.4); color: var(--green); }
-  .toast.error { border-color: rgba(247,97,79,0.4); color: var(--red); }
+  /* ADMIN HIDDEN TRIGGER */
+  .admin-trigger { position:fixed; bottom:0; right:0; width:40px; height:40px; cursor:pointer; z-index:50; opacity:0; }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-top">
-    <div class="logo">🚌 Bus<span>Navette</span></div>
-    <div class="date-badge" id="dateDisplay"></div>
+<!-- ═══════════════ AUTH SCREEN ═══════════════ -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-logo">🚌 Bus<span>Navette</span></div>
+  <div class="auth-sub">Navette Bizerte · El Alia · Tunis</div>
+
+  <!-- LOGIN -->
+  <div class="auth-card" id="loginCard">
+    <div class="auth-title">Connexion</div>
+    <div class="auth-desc">Entrez votre numéro de téléphone et mot de passe pour accéder à l'app.</div>
+    <div class="error-msg" id="loginError"></div>
+    <div class="field"><label>Numéro de téléphone</label><input type="tel" id="loginPhone" placeholder="Ex: 22334455" inputmode="numeric"></div>
+    <div class="field"><label>Mot de passe</label><input type="password" id="loginPass" placeholder="••••••••"></div>
+    <button class="btn-primary" onclick="doLogin()">Se connecter</button>
+    <div class="auth-toggle">Première connexion ? <a onclick="showRegister()">Créer votre mot de passe</a></div>
   </div>
-  <div class="route-bar">
-    <span class="route-stop">📍 Bizerte</span>
-    <span class="route-arrow">→</span>
-    <span class="route-stop">📍 El Alia</span>
-    <span class="route-arrow">→</span>
-    <span class="route-stop work">🏢 Tunis</span>
+
+  <!-- REGISTER (first time only) -->
+  <div class="auth-card" id="registerCard" style="display:none">
+    <div class="auth-title">Première connexion</div>
+    <div class="auth-desc">Votre numéro doit être enregistré par l'admin. Choisissez un mot de passe pour votre compte.</div>
+    <div class="error-msg" id="registerError"></div>
+    <div class="field"><label>Numéro de téléphone</label><input type="tel" id="regPhone" placeholder="Ex: 22334455" inputmode="numeric"></div>
+    <div class="field"><label>Choisir un mot de passe</label><input type="password" id="regPass" placeholder="Minimum 6 caractères"></div>
+    <div class="field"><label>Confirmer le mot de passe</label><input type="password" id="regPass2" placeholder="Répétez le mot de passe"></div>
+    <button class="btn-primary" onclick="doRegister()">Créer mon mot de passe</button>
+    <button class="btn-secondary" onclick="showLogin()">← Retour connexion</button>
   </div>
-  <div class="capacity-row">
-    <div class="cap-card">
-      <div class="cap-label">🌅 Aller</div>
-      <div class="cap-bar"><div class="cap-fill ok" id="barAller" style="width:0%"></div></div>
-      <div class="cap-numbers"><span id="countAller">0</span><small>/29 places</small></div>
+
+  <!-- ADMIN LOGIN -->
+  <div class="auth-card" id="adminLoginCard" style="display:none">
+    <div class="auth-title">🔧 Accès Admin</div>
+    <div class="auth-desc">Entrez le mot de passe administrateur.</div>
+    <div class="error-msg" id="adminLoginError"></div>
+    <div class="field"><label>Mot de passe admin</label><input type="password" id="adminLoginPass" placeholder="••••••••"></div>
+    <button class="btn-primary" onclick="doAdminLogin()">Accéder</button>
+    <button class="btn-secondary" onclick="showLogin()">← Retour</button>
+  </div>
+</div>
+
+<!-- ═══════════════ MAIN APP ═══════════════ -->
+<div id="appScreen">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <div class="header-left">
+        <div class="logo">🚌 Bus<span>Navette</span></div>
+        <div class="occupancy-badge">
+          <div class="occupancy-dot"></div>
+          <div>
+            <div class="occupancy-num" id="occupancyNum">0</div>
+            <div class="occupancy-label">réservés</div>
+          </div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="user-badge" id="userBadge">—</div>
+        <button class="btn-logout" onclick="doLogout()">✕</button>
+      </div>
     </div>
-    <div class="cap-card">
-      <div class="cap-label">🌆 Retour</div>
-      <div class="cap-bar"><div class="cap-fill ok" id="barRetour" style="width:0%"></div></div>
-      <div class="cap-numbers"><span id="countRetour">0</span><small>/29 places</small></div>
+    <div class="route-bar">
+      <span class="route-stop">📍 Bizerte</span>
+      <span class="route-arrow">→</span>
+      <span class="route-stop">📍 El Alia</span>
+      <span class="route-arrow">→</span>
+      <span class="route-stop work">🏢 Tunis</span>
+    </div>
+    <div class="capacity-row">
+      <div class="cap-card">
+        <div class="cap-label">🌅 Aller</div>
+        <div class="cap-bar"><div class="cap-fill ok" id="barAller" style="width:0%"></div></div>
+        <div class="cap-numbers"><span id="countAller">0</span><small>/29 places</small></div>
+      </div>
+      <div class="cap-card">
+        <div class="cap-label">🌆 Retour</div>
+        <div class="cap-bar"><div class="cap-fill ok" id="barRetour" style="width:0%"></div></div>
+        <div class="cap-numbers"><span id="countRetour">0</span><small>/29 places</small></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- TABS -->
+    <div class="tabs" id="tabBar">
+      <button class="tab active" onclick="switchTab('reserver')">✏️ Réserver</button>
+      <button class="tab" onclick="switchTab('liste')">👥 Liste</button>
+      <button class="tab admin-tab" id="adminTab" onclick="switchTab('admin')" style="display:none">🔧 Admin</button>
+    </div>
+
+    <!-- TAB RÉSERVER -->
+    <div id="tab-reserver">
+      <div class="notice">🕖 Réservations ouvertes à partir de 19h</div>
+
+      <div class="section-card">
+        <div class="section-label">Votre station de départ</div>
+        <div class="station-grid">
+          <button class="station-btn" id="btn-bizerte" onclick="selectStation('Bizerte')">
+            <span class="si">🟠</span>Bizerte
+          </button>
+          <button class="station-btn" id="btn-elalia" onclick="selectStation('El Alia')">
+            <span class="si">🟢</span>El Alia
+          </button>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="trip-header">
+          <div class="trip-icon aller">🌅</div>
+          <div><div class="trip-title">Trajet Aller</div><div class="trip-route">Bizerte → El Alia → Tunis</div></div>
+        </div>
+        <div class="btn-group">
+          <button class="btn-trip reserve" id="btn-aller-oui" onclick="selectTrip('aller','oui')">✓ Je réserve</button>
+          <button class="btn-trip annuler" id="btn-aller-non" onclick="selectTrip('aller','non')">✕ J'annule</button>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="trip-header">
+          <div class="trip-icon retour">🌆</div>
+          <div><div class="trip-title">Trajet Retour</div><div class="trip-route">Tunis → El Alia → Bizerte</div></div>
+        </div>
+        <div class="btn-group">
+          <button class="btn-trip reserve" id="btn-retour-oui" onclick="selectTrip('retour','oui')">✓ Je réserve</button>
+          <button class="btn-trip annuler" id="btn-retour-non" onclick="selectTrip('retour','non')">✕ J'annule</button>
+        </div>
+      </div>
+
+      <button class="btn-submit" onclick="submitReservation()">Confirmer ma réservation</button>
+    </div>
+
+    <!-- TAB LISTE -->
+    <div id="tab-liste" style="display:none">
+      <div class="filter-bar">
+        <button class="filter-btn fa" id="f-all" onclick="setFilter('all')">Tous</button>
+        <button class="filter-btn" id="f-aller" onclick="setFilter('aller')">🌅 Aller</button>
+        <button class="filter-btn" id="f-retour" onclick="setFilter('retour')">🌆 Retour</button>
+        <button class="filter-btn" id="f-bizerte" onclick="setFilter('bizerte')">🟠 Bizerte</button>
+        <button class="filter-btn" id="f-elalia" onclick="setFilter('elalia')">🟢 El Alia</button>
+      </div>
+      <div id="listContent"><div class="loading"><div class="spinner"></div>Chargement...</div></div>
+    </div>
+
+    <!-- TAB ADMIN -->
+    <div id="tab-admin" style="display:none">
+      <div class="admin-header">
+        <div class="admin-title">Gestion des membres</div>
+        <div class="admin-badge">ADMIN</div>
+      </div>
+
+      <div class="add-member-form">
+        <div class="admin-section-title">➕ Ajouter un membre</div>
+        <div class="form-row">
+          <input type="text" class="admin-input" id="newMemberName" placeholder="Nom Prénom">
+          <input type="tel" class="admin-input" id="newMemberPhone" placeholder="Téléphone" inputmode="numeric">
+        </div>
+        <button class="btn-add" onclick="addMember()">Ajouter au groupe</button>
+      </div>
+
+      <div class="divider-line"></div>
+      <div class="admin-section-title">👥 Membres du groupe (<span id="memberCount">0</span>)</div>
+      <div id="membersList"><div class="loading"><div class="spinner"></div></div></div>
+
+      <div class="divider-line"></div>
+      <div class="admin-section-title">🔑 Changer le mot de passe admin</div>
+      <div class="add-member-form">
+        <div class="field" style="margin-bottom:10px"><input type="password" class="admin-input" id="newAdminPass" placeholder="Nouveau mot de passe"></div>
+        <button class="btn-add" onclick="changeAdminPass()">Mettre à jour</button>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="main">
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('reserver')">✏️ Réserver</button>
-    <button class="tab" onclick="switchTab('liste')">👥 Liste du jour</button>
-  </div>
-
-  <div id="tab-reserver">
-    <div class="notice"><span class="dot"></span>Réservations ouvertes à partir de 19h</div>
-
-    <div class="section-card">
-      <div class="section-label">Votre nom</div>
-      <input type="text" class="name-input" id="nameInput" placeholder="Nom et Prénom" maxlength="50" autocomplete="name">
-    </div>
-
-    <div class="section-card">
-      <div class="section-label">Votre station de départ</div>
-      <div class="station-grid">
-        <button class="station-btn" id="btn-bizerte" onclick="selectStation('Bizerte')">
-          <span class="station-icon">🟠</span>Bizerte
-        </button>
-        <button class="station-btn" id="btn-elalia" onclick="selectStation('El Alia')">
-          <span class="station-icon">🟢</span>El Alia
-        </button>
-      </div>
-    </div>
-
-    <div class="section-card">
-      <div class="trip-header">
-        <div class="trip-icon aller">🌅</div>
-        <div>
-          <div class="trip-title">Trajet Aller</div>
-          <div class="trip-route">Bizerte → El Alia → Tunis</div>
-        </div>
-      </div>
-      <div class="btn-group">
-        <button class="btn-trip reserve" id="btn-aller-oui" onclick="selectTrip('aller','oui')">✓ Je réserve</button>
-        <button class="btn-trip annuler" id="btn-aller-non" onclick="selectTrip('aller','non')">✕ J'annule</button>
-      </div>
-    </div>
-
-    <div class="section-card">
-      <div class="trip-header">
-        <div class="trip-icon retour">🌆</div>
-        <div>
-          <div class="trip-title">Trajet Retour</div>
-          <div class="trip-route">Tunis → El Alia → Bizerte</div>
-        </div>
-      </div>
-      <div class="btn-group">
-        <button class="btn-trip reserve" id="btn-retour-oui" onclick="selectTrip('retour','oui')">✓ Je réserve</button>
-        <button class="btn-trip annuler" id="btn-retour-non" onclick="selectTrip('retour','non')">✕ J'annule</button>
-      </div>
-    </div>
-
-    <button class="btn-submit" onclick="submitReservation()">Confirmer ma réservation</button>
-  </div>
-
-  <div id="tab-liste" style="display:none">
-    <div id="listContent"><div class="loading"><div class="spinner"></div>Chargement...</div></div>
-  </div>
-</div>
+<!-- HIDDEN ADMIN TRIGGER (tap 5x bottom-right corner) -->
+<div class="admin-trigger" id="adminTrigger" onclick="adminTriggerTap()"></div>
 
 <div class="toast" id="toast"></div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, set, get, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAM6or5v-KbDULxs7JsT_2vWs5pBmvB7nE",
@@ -233,167 +370,330 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-
   const MAX = 29;
+  let currentUser = null; // { phone, name, isAdmin }
   let choix = { aller: null, retour: null };
   let selectedStation = null;
+  let currentFilter = 'all';
+  let cachedData = {};
+  let adminTapCount = 0;
 
-  const today = new Date();
-  const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
-  const jours = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
-  const mois = ['janv','févr','mars','avr','mai','juin','juil','août','sept','oct','nov','déc'];
-  document.getElementById('dateDisplay').textContent =
-    jours[today.getDay()] + ' ' + today.getDate() + ' ' + mois[today.getMonth()];
+  // Date keys
+  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate()+1);
+  const dateKey = tomorrow.toISOString().split('T')[0].replace(/-/g,'_');
+  const resRef = ref(db, `reservations/${dateKey}`);
 
-  const dateKey = tomorrow.toISOString().split('T')[0].replace(/-/g, '_');
-  const dbRef = ref(db, `reservations/${dateKey}`);
+  // ─── AUTH ───
+  window.showLogin = () => { hide('registerCard'); hide('adminLoginCard'); show('loginCard'); };
+  window.showRegister = () => { hide('loginCard'); hide('adminLoginCard'); show('registerCard'); };
+  window.showAdminLogin = () => { hide('loginCard'); hide('registerCard'); show('adminLoginCard'); };
 
-  // Realtime listener pour les compteurs
-  onValue(dbRef, (snapshot) => {
-    const data = snapshot.val() || {};
-    updateCapacity(data);
-    if (document.getElementById('tab-liste').style.display !== 'none') {
-      renderList(data);
+  window.doLogin = async () => {
+    const phone = document.getElementById('loginPhone').value.trim();
+    const pass = document.getElementById('loginPass').value;
+    const err = document.getElementById('loginError');
+    err.style.display='none';
+    if(!phone||!pass){ showErr(err,'Remplissez tous les champs'); return; }
+
+    // Check admin
+    const adminSnap = await get(ref(db,'admin/password'));
+    if(adminSnap.exists() && adminSnap.val() === pass && phone === 'admin'){
+      loginAsAdmin(); return;
     }
-  });
 
-  function updateCapacity(data) {
-    let cA = 0, cR = 0;
-    Object.values(data).forEach(p => {
-      if (p.aller === 'oui') cA++;
-      if (p.retour === 'oui') cR++;
-    });
-    document.getElementById('countAller').textContent = cA;
-    document.getElementById('countRetour').textContent = cR;
-    setBar('barAller', cA);
-    setBar('barRetour', cR);
+    // Check member
+    const memberSnap = await get(ref(db,`members/${phone}`));
+    if(!memberSnap.exists()){ showErr(err,'Numéro non autorisé. Contactez l\'admin.'); return; }
+    const member = memberSnap.val();
+    if(!member.password){ showErr(err,'Compte non activé. Utilisez "Première connexion".'); return; }
+    if(member.password !== pass){ showErr(err,'Mot de passe incorrect.'); return; }
+
+    currentUser = { phone, name: member.name, isAdmin: false };
+    enterApp();
+  };
+
+  window.doRegister = async () => {
+    const phone = document.getElementById('regPhone').value.trim();
+    const pass = document.getElementById('regPass').value;
+    const pass2 = document.getElementById('regPass2').value;
+    const err = document.getElementById('registerError');
+    err.style.display='none';
+    if(!phone||!pass||!pass2){ showErr(err,'Remplissez tous les champs'); return; }
+    if(pass.length < 6){ showErr(err,'Mot de passe trop court (min 6 caractères)'); return; }
+    if(pass !== pass2){ showErr(err,'Les mots de passe ne correspondent pas'); return; }
+
+    const memberSnap = await get(ref(db,`members/${phone}`));
+    if(!memberSnap.exists()){ showErr(err,'Numéro non autorisé. Contactez l\'admin.'); return; }
+    const member = memberSnap.val();
+    if(member.password){ showErr(err,'Compte déjà activé. Utilisez "Connexion".'); return; }
+
+    await update(ref(db,`members/${phone}`), { password: pass });
+    currentUser = { phone, name: member.name, isAdmin: false };
+    enterApp();
+    showToast('✅ Compte activé !', 'success');
+  };
+
+  window.doAdminLogin = async () => {
+    const pass = document.getElementById('adminLoginPass').value;
+    const err = document.getElementById('adminLoginError');
+    err.style.display='none';
+    const snap = await get(ref(db,'admin/password'));
+    const storedPass = snap.exists() ? snap.val() : 'admin1234';
+    if(pass !== storedPass){ showErr(err,'Mot de passe incorrect'); return; }
+    loginAsAdmin();
+  };
+
+  function loginAsAdmin(){
+    currentUser = { phone:'admin', name:'Administrateur', isAdmin:true };
+    enterApp();
   }
 
-  function setBar(id, count) {
-    const pct = Math.min(100, (count / MAX) * 100);
-    const el = document.getElementById(id);
-    el.style.width = pct + '%';
-    el.className = 'cap-fill ' + (pct >= 100 ? 'full' : pct >= 75 ? 'warn' : 'ok');
+  function enterApp(){
+    hide('authScreen');
+    show('appScreen');
+    document.getElementById('appScreen').style.display = 'block';
+    document.getElementById('userBadge').textContent = currentUser.name;
+    if(currentUser.isAdmin){
+      document.getElementById('adminTab').style.display = 'block';
+    }
+    // Restore station preference
+    try {
+      const saved = JSON.parse(localStorage.getItem(`buspref_${currentUser.phone}`) || '{}');
+      if(saved.station) selectStation(saved.station);
+    } catch(e){}
+    // Listen to reservations
+    onValue(resRef, snap => {
+      cachedData = snap.val() || {};
+      updateCapacity(cachedData);
+      if(document.getElementById('tab-liste').style.display !== 'none') renderList(cachedData);
+    });
+    if(currentUser.isAdmin) loadMembers();
   }
 
-  window.switchTab = function(tab) {
-    document.querySelectorAll('.tab').forEach((t, i) =>
-      t.classList.toggle('active', (i === 0 && tab === 'reserver') || (i === 1 && tab === 'liste')));
-    document.getElementById('tab-reserver').style.display = tab === 'reserver' ? 'block' : 'none';
-    document.getElementById('tab-liste').style.display = tab === 'liste' ? 'block' : 'none';
-    if (tab === 'liste') get(dbRef).then(snap => renderList(snap.val() || {}));
+  window.doLogout = () => {
+    currentUser = null; choix={aller:null,retour:null}; selectedStation=null;
+    hide('appScreen'); show('authScreen');
+    document.getElementById('appScreen').style.display = 'none';
+    document.getElementById('loginPhone').value='';
+    document.getElementById('loginPass').value='';
+    document.getElementById('adminTab').style.display='none';
+    showLogin();
   };
 
-  window.selectStation = function(station) {
-    selectedStation = station;
-    document.getElementById('btn-bizerte').className = 'station-btn' + (station === 'Bizerte' ? ' selected-bizerte' : '');
-    document.getElementById('btn-elalia').className = 'station-btn' + (station === 'El Alia' ? ' selected-elalia' : '');
-    // Save preference
-    const saved = JSON.parse(localStorage.getItem('busnavette_user') || '{}');
-    localStorage.setItem('busnavette_user', JSON.stringify({ ...saved, station }));
-  };
-
-  window.selectTrip = function(trip, val) {
-    choix[trip] = val;
-    ['oui', 'non'].forEach(v => {
-      document.getElementById(`btn-${trip}-${v}`).classList.toggle('selected', v === val);
+  // ─── CAPACITY ───
+  function updateCapacity(data){
+    let cA=0,cR=0,tot=0;
+    Object.values(data).forEach(p=>{
+      if(p.aller==='oui'){cA++;tot++;}
+      if(p.retour==='oui'){cR++;if(p.aller!=='oui')tot++;}
     });
+    document.getElementById('countAller').textContent=cA;
+    document.getElementById('countRetour').textContent=cR;
+    document.getElementById('occupancyNum').textContent=cA+cR;
+    setBar('barAller',cA); setBar('barRetour',cR);
+  }
+
+  function setBar(id,count){
+    const pct=Math.min(100,(count/MAX)*100);
+    const el=document.getElementById(id);
+    el.style.width=pct+'%';
+    el.className='cap-fill '+(pct>=100?'full':pct>=75?'warn':'ok');
+  }
+
+  // ─── TABS ───
+  window.switchTab = function(tab){
+    ['reserver','liste','admin'].forEach(t=>{
+      const el=document.getElementById(`tab-${t}`);
+      if(el) el.style.display = t===tab?'block':'none';
+    });
+    document.querySelectorAll('.tab').forEach(btn=>{
+      btn.classList.toggle('active', btn.onclick?.toString().includes(`'${tab}'`));
+    });
+    if(tab==='liste') renderList(cachedData);
+    if(tab==='admin') loadMembers();
   };
 
-  window.submitReservation = async function() {
-    const name = document.getElementById('nameInput').value.trim();
-    if (!name) { showToast('Entrez votre nom et prénom', 'error'); return; }
-    if (!selectedStation) { showToast('Choisissez votre station', 'error'); return; }
-    if (!choix.aller && !choix.retour) { showToast('Choisissez au moins un trajet', 'error'); return; }
+  // ─── RESERVE ───
+  window.selectStation = function(s){
+    selectedStation=s;
+    document.getElementById('btn-bizerte').className='station-btn'+(s==='Bizerte'?' sel-biz':'');
+    document.getElementById('btn-elalia').className='station-btn'+(s==='El Alia'?' sel-ela':'');
+    if(currentUser) localStorage.setItem(`buspref_${currentUser.phone}`, JSON.stringify({station:s}));
+  };
 
-    const snap = await get(dbRef);
-    const data = snap.val() || {};
-    const key = name.replace(/\s+/g, '_').toLowerCase();
-    let cA = 0, cR = 0;
-    Object.entries(data).forEach(([k, p]) => {
-      if (k !== key) {
-        if (p.aller === 'oui') cA++;
-        if (p.retour === 'oui') cR++;
-      }
+  window.selectTrip = function(trip,val){
+    choix[trip]=val;
+    ['oui','non'].forEach(v=>document.getElementById(`btn-${trip}-${v}`).classList.toggle('selected',v===val));
+  };
+
+  window.submitReservation = async function(){
+    if(!currentUser){ showToast('Connectez-vous d\'abord','error'); return; }
+    if(!selectedStation){ showToast('Choisissez votre station','error'); return; }
+    if(!choix.aller&&!choix.retour){ showToast('Choisissez au moins un trajet','error'); return; }
+
+    const key = currentUser.phone;
+    let cA=0,cR=0;
+    Object.entries(cachedData).forEach(([k,p])=>{
+      if(k!==key){ if(p.aller==='oui')cA++; if(p.retour==='oui')cR++; }
     });
+    if(choix.aller==='oui'&&cA>=MAX){ showToast('❌ Aller complet (29/29)','error'); return; }
+    if(choix.retour==='oui'&&cR>=MAX){ showToast('❌ Retour complet (29/29)','error'); return; }
 
-    if (choix.aller === 'oui' && cA >= MAX) { showToast('❌ Aller complet (29/29)', 'error'); return; }
-    if (choix.retour === 'oui' && cR >= MAX) { showToast('❌ Retour complet (29/29)', 'error'); return; }
-
-    await set(ref(db, `reservations/${dateKey}/${key}`), {
-      nom: name,
+    await set(ref(db,`reservations/${dateKey}/${key}`),{
+      nom: currentUser.name,
       station: selectedStation,
-      aller: choix.aller || 'non',
-      retour: choix.retour || 'non',
+      aller: choix.aller||'non',
+      retour: choix.retour||'non',
       ts: Date.now()
     });
 
-    // Save name preference
-    const saved = JSON.parse(localStorage.getItem('busnavette_user') || '{}');
-    localStorage.setItem('busnavette_user', JSON.stringify({ ...saved, name }));
-
-    const msg = choix.aller === 'oui' && choix.retour === 'oui' ? '✅ Aller + Retour réservés !'
-      : choix.aller === 'oui' ? '✅ Aller réservé !'
-      : choix.retour === 'oui' ? '✅ Retour réservé !'
-      : '✅ Annulation enregistrée';
-    showToast(msg, 'success');
+    const msg = choix.aller==='oui'&&choix.retour==='oui'?'✅ Aller + Retour réservés !'
+      :choix.aller==='oui'?'✅ Aller réservé !'
+      :choix.retour==='oui'?'✅ Retour réservé !'
+      :'✅ Annulation enregistrée';
+    showToast(msg,'success');
   };
 
-  function renderList(data) {
-    const entries = Object.values(data).filter(p => p.aller === 'oui' || p.retour === 'oui');
-    if (entries.length === 0) {
-      document.getElementById('listContent').innerHTML =
-        `<div class="empty-state"><div class="empty-icon">🚌</div>Aucune réservation pour demain encore</div>`;
+  // ─── LIST ───
+  window.setFilter = function(f){
+    currentFilter=f;
+    const map={all:'fa',aller:'fa',retour:'fr',bizerte:'fb',elalia:'fe'};
+    ['all','aller','retour','bizerte','elalia'].forEach(id=>{
+      const btn=document.getElementById(`f-${id}`);
+      btn.className='filter-btn'+(f===id?' '+map[id]:'');
+    });
+    renderList(cachedData);
+  };
+
+  function renderList(data){
+    let entries=Object.values(data).filter(p=>p.aller==='oui'||p.retour==='oui');
+    if(currentFilter==='aller') entries=entries.filter(p=>p.aller==='oui');
+    else if(currentFilter==='retour') entries=entries.filter(p=>p.retour==='oui');
+    else if(currentFilter==='bizerte') entries=entries.filter(p=>p.station==='Bizerte');
+    else if(currentFilter==='elalia') entries=entries.filter(p=>p.station==='El Alia');
+
+    if(!entries.length){
+      document.getElementById('listContent').innerHTML=`<div class="empty-state"><div class="empty-icon">🚌</div>Aucune réservation pour ce filtre</div>`;
       return;
     }
+    const allers=entries.filter(p=>p.aller==='oui');
+    const retours=entries.filter(p=>p.retour==='oui');
+    let html='';
 
-    const allers = entries.filter(p => p.aller === 'oui');
-    const retours = entries.filter(p => p.retour === 'oui');
-    let html = '';
-
-    if (allers.length) {
-      html += `<div class="list-section-title">🌅 Aller <span class="list-badge">${allers.length}/29</span></div>`;
-      ['Bizerte', 'El Alia'].forEach(station => {
-        const group = allers.filter(p => p.station === station);
-        if (!group.length) return;
-        const cls = station === 'Bizerte' ? 'bizerte' : 'elalia';
-        html += `<div class="station-group">
-          <div class="station-group-header"><div class="station-dot ${cls}"></div><div class="station-group-name">📍 ${station} (${group.length})</div></div>`;
-        group.forEach(p => html += `<div class="person-row"><span class="person-name">${p.nom}</span><span class="trip-pill aller">Aller</span></div>`);
-        html += '</div>';
+    if(allers.length){
+      html+=`<div class="list-title">🌅 Aller <span class="list-badge">${allers.length}/29</span></div>`;
+      ['Bizerte','El Alia'].forEach(st=>{
+        const g=allers.filter(p=>p.station===st); if(!g.length) return;
+        const cls=st==='Bizerte'?'biz':'ela';
+        html+=`<div class="sgroup"><div class="sgroup-hdr"><div class="sdot ${cls}"></div><div class="sgroup-name">📍 ${st} (${g.length})</div></div>`;
+        g.forEach(p=>html+=`<div class="person-row"><div class="person-info"><div class="person-name">${p.nom}</div><div class="person-station">📍 ${p.station}</div></div><span class="trip-pill aller">Aller</span></div>`);
+        html+='</div>';
       });
     }
-
-    if (retours.length) {
-      html += `<div class="segment-divider"><span>🌆 Retour • ${retours.length}/29</span></div>`;
-      // Retour : El Alia d'abord (premier arrêt au retour)
-      ['El Alia', 'Bizerte'].forEach(station => {
-        const group = retours.filter(p => p.station === station);
-        if (!group.length) return;
-        const cls = station === 'Bizerte' ? 'bizerte' : 'elalia';
-        html += `<div class="station-group">
-          <div class="station-group-header"><div class="station-dot ${cls}"></div><div class="station-group-name">📍 ${station} (${group.length})</div></div>`;
-        group.forEach(p => html += `<div class="person-row"><span class="person-name">${p.nom}</span><span class="trip-pill retour">Retour</span></div>`);
-        html += '</div>';
+    if(retours.length){
+      if(allers.length) html+=`<div class="seg-div"><span>🌆 Retour • ${retours.length}/29</span></div>`;
+      else html+=`<div class="list-title">🌆 Retour <span class="list-badge">${retours.length}/29</span></div>`;
+      ['El Alia','Bizerte'].forEach(st=>{
+        const g=retours.filter(p=>p.station===st); if(!g.length) return;
+        const cls=st==='Bizerte'?'biz':'ela';
+        html+=`<div class="sgroup"><div class="sgroup-hdr"><div class="sdot ${cls}"></div><div class="sgroup-name">📍 ${st} (${g.length})</div></div>`;
+        g.forEach(p=>html+=`<div class="person-row"><div class="person-info"><div class="person-name">${p.nom}</div><div class="person-station">📍 ${p.station}</div></div><span class="trip-pill retour">Retour</span></div>`);
+        html+='</div>';
       });
     }
-
-    document.getElementById('listContent').innerHTML = html;
+    document.getElementById('listContent').innerHTML=html;
   }
 
-  function showToast(msg, type = 'success') {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.className = `toast ${type}`;
-    setTimeout(() => t.classList.add('show'), 10);
-    setTimeout(() => t.classList.remove('show'), 3000);
+  // ─── ADMIN ───
+  window.addMember = async function(){
+    const name=document.getElementById('newMemberName').value.trim();
+    const phone=document.getElementById('newMemberPhone').value.trim();
+    if(!name||!phone){ showToast('Nom et téléphone requis','error'); return; }
+    const snap=await get(ref(db,`members/${phone}`));
+    if(snap.exists()){ showToast('Ce numéro existe déjà','error'); return; }
+    await set(ref(db,`members/${phone}`),{ name, phone, createdAt:Date.now() });
+    document.getElementById('newMemberName').value='';
+    document.getElementById('newMemberPhone').value='';
+    showToast(`✅ ${name} ajouté !`,'success');
+    loadMembers();
+  };
+
+  window.deleteMember = async function(phone){
+    if(!confirm('Supprimer ce membre ?')) return;
+    await remove(ref(db,`members/${phone}`));
+    showToast('Membre supprimé','success');
+    loadMembers();
+  };
+
+  async function loadMembers(){
+    const snap=await get(ref(db,'members'));
+    const data=snap.val()||{};
+    const members=Object.values(data);
+    document.getElementById('memberCount').textContent=members.length;
+    if(!members.length){
+      document.getElementById('membersList').innerHTML=`<div class="empty-state"><div class="empty-icon">👤</div>Aucun membre</div>`;
+      return;
+    }
+    let html='';
+    members.forEach(m=>{
+      const status=m.password?'active':'pending';
+      const label=m.password?'Activé':'En attente';
+      html+=`<div class="member-row">
+        <div class="member-info">
+          <div class="member-name">${m.name}</div>
+          <div class="member-phone">📞 ${m.phone}</div>
+        </div>
+        <span class="member-status ${status}">${label}</span>
+        <button class="btn-del" onclick="deleteMember('${m.phone}')">Retirer</button>
+      </div>`;
+    });
+    document.getElementById('membersList').innerHTML=html;
   }
 
-  // Restore saved preferences
-  try {
-    const saved = JSON.parse(localStorage.getItem('busnavette_user') || '{}');
-    if (saved.name) document.getElementById('nameInput').value = saved.name;
-    if (saved.station) window.selectStation(saved.station);
-  } catch(e) {}
+  window.changeAdminPass = async function(){
+    const pass=document.getElementById('newAdminPass').value;
+    if(!pass||pass.length<6){ showToast('Mot de passe trop court','error'); return; }
+    await set(ref(db,'admin/password'), pass);
+    document.getElementById('newAdminPass').value='';
+    showToast('✅ Mot de passe mis à jour','success');
+  };
+
+  // ─── ADMIN HIDDEN TRIGGER (tap 5x) ───
+  window.adminTriggerTap = function(){
+    adminTapCount++;
+    if(adminTapCount>=5){ adminTapCount=0; hide('loginCard'); showAdminLogin(); }
+    setTimeout(()=>{ adminTapCount=0; }, 3000);
+  };
+
+  // ─── HELPERS ───
+  function show(id){ document.getElementById(id).style.display='flex'; }
+  function hide(id){ document.getElementById(id).style.display='none'; }
+  function showErr(el,msg){ el.textContent=msg; el.style.display='block'; }
+
+  function showToast(msg,type='success'){
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.className=`toast ${type}`;
+    setTimeout(()=>t.classList.add('show'),10);
+    setTimeout(()=>t.classList.remove('show'),3000);
+  }
+
+  // Enter key support
+  ['loginPass','regPass2','adminLoginPass'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.addEventListener('keydown',e=>{ if(e.key==='Enter'){
+      if(id==='loginPass') window.doLogin();
+      else if(id==='regPass2') window.doRegister();
+      else if(id==='adminLoginPass') window.doAdminLogin();
+    }});
+  });
+
+  // Initialize admin password if not set
+  get(ref(db,'admin/password')).then(snap=>{
+    if(!snap.exists()) set(ref(db,'admin/password'),'admin1234');
+  });
+
+  // Expose selectStation globally
+  window.selectStation = window.selectStation;
 </script>
 </body>
 </html>
