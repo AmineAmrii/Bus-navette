@@ -344,7 +344,7 @@ select.ai{-webkit-appearance:none;appearance:none;background-image:url("data:ima
 
     <!-- LISTE (tous les rôles voient les stats + liste) -->
     <div id="pv-liste" style="display:none">
-      <div class="stats-grid">
+      <div class="stats-grid" id="statsGrid" style="display:none">
         <div class="stat-card sc-aller"><div class="stat-num" id="st-cntA">0</div><div class="stat-lbl">🌅 Aller</div></div>
         <div class="stat-card sc-retour"><div class="stat-num" id="st-cntR">0</div><div class="stat-lbl">🌆 Retour</div></div>
         <div class="stat-card sc-dispo"><div class="stat-num" id="st-dispo">29</div><div class="stat-lbl">Places dispo</div></div>
@@ -412,6 +412,18 @@ select.ai{-webkit-appearance:none;appearance:none;background-image:url("data:ima
         </div>
         <button class="badd sup full" onclick="changeRole()">Appliquer le rôle</button>
       </div>
+      <div class="acard" style="border-color:rgba(45,212,191,0.2)">
+        <div class="acard-title" style="color:var(--teal)">🧪 Mode Test</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:0.78rem;color:var(--muted)">Désactive le blocage horaire pour tester l'app à tout moment.</div>
+          <div id="testModeStatus" style="font-size:0.72rem;font-family:'Syne',sans-serif;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(247,97,79,0.12);color:var(--red);white-space:nowrap;margin-left:10px">OFF</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+          <button class="badd" style="background:linear-gradient(135deg,var(--teal),#5eead4);color:#0b0e18" onclick="setTestMode(true)">✅ Activer</button>
+          <button class="badd" style="background:linear-gradient(135deg,var(--red),#f7914f);color:#fff" onclick="setTestMode(false)">🔴 Désactiver</button>
+        </div>
+      </div>
+
       <div class="acard" style="border-color:rgba(247,97,79,0.15)">
         <div class="acard-title" style="color:var(--red)">🗑️ Purge des réservations</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
@@ -571,18 +583,37 @@ function enterApp(){
   // Supervisor/Driver: Liste only
   // Member: Réserver, Liste
   if(CU.role==='superadmin'){
-    hide('tb-reserver');
+    hide('tb-reserver');  // Super Admin ne réserve pas
     show('tb-admin');show('tb-super');show('tb-log');
   } else if(CU.role==='admin'){
-    hide('tb-reserver');
-    show('tb-admin');show('tb-log');
+    show('tb-admin');show('tb-log');  // Admin peut réserver
   } else if(OBSERVER_ROLES.includes(CU.role)){
-    hide('tb-reserver');
+    hide('tb-reserver');  // Chauffeur/Superviseur = lecture seule
   }
   // member: default tabs (reserver + liste) already shown
 
-  // Reservation notice
-  if(OPEN) show('noticeOpen'); else { show('noticeClosed'); $('btnConfirm').disabled=true; }
+  // Reservation notice — check test mode first
+  get(ref(db,'settings/testMode')).then(snap=>{
+    const testMode=snap.exists()&&snap.val()===true;
+    if(testMode||OPEN){
+      show('noticeOpen');
+      if(testMode){
+        $('noticeOpen').innerHTML='🧪 Mode test actif — Réservations débloquées';
+        $('noticeOpen').style.background='rgba(45,212,191,0.07)';
+        $('noticeOpen').style.borderColor='rgba(45,212,191,0.2)';
+        $('noticeOpen').style.color='var(--teal)';
+      }
+    } else {
+      show('noticeClosed');
+      $('btnConfirm').disabled=true;
+    }
+  });
+  // Also load test mode status for super admin UI
+  if(CU.role==='superadmin'){
+    get(ref(db,'settings/testMode')).then(snap=>{
+      updateTestModeUI(snap.exists()&&snap.val()===true);
+    });
+  }
 
   // Restore station pref
   try{const s=JSON.parse(localStorage.getItem(`bp_${CU.phone}`)||'{}');if(s.station)selSt(s.station);}catch(e){}
@@ -608,10 +639,17 @@ function enterApp(){
     });
   }
 
+  // Show stats only for superadmin, driver, supervisor
+  const STATS_ROLES=['superadmin','driver','supervisor'];
+  if(STATS_ROLES.includes(CU.role)){
+    const sg=document.getElementById('statsGrid');
+    if(sg) sg.style.display='grid';
+  }
+
   // Start on right tab
-  if(CU.role==='superadmin'||CU.role==='admin') switchTab('liste');
+  if(CU.role==='superadmin') switchTab('liste');
   else if(OBSERVER_ROLES.includes(CU.role)) switchTab('liste');
-  else switchTab('reserver');
+  else switchTab('reserver');  // admin + member start on reserver
 }
 
 window.doLogout=async()=>{
@@ -688,7 +726,10 @@ window.selTrip=function(trip,val){
 };
 window.submitRes=async function(){
   if(!CU){toast('Connectez-vous','e');return;}
-  if(!OPEN){toast('⏰ Réservations fermées (19h–07h)','e');return;}
+  // Check test mode or time window
+  const tmSnap=await get(ref(db,'settings/testMode'));
+  const testModeOn=tmSnap.exists()&&tmSnap.val()===true;
+  if(!testModeOn&&!OPEN){toast('⏰ Réservations fermées (19h–07h)','e');return;}
   if(!selStation){toast('Choisissez votre station','e');return;}
   if(!choix.aller&&!choix.retour){toast('Choisissez au moins un trajet','e');return;}
   const key=CU.phone, old=cachedRes[key];
@@ -863,10 +904,26 @@ window.manualPurge=async()=>{
   await log('Purge manuelle',`${n} jour(s)`);toast(`✅ ${n} jour(s) purgé(s)`);
 };
 
-// Auto-purge à 19h Tunis
+// ── MODE TEST ──
+// Quand actif, le blocage horaire est désactivé pour tout le monde
+window.setTestMode=async(active)=>{
+  await set(ref(db,'settings/testMode'),active);
+  updateTestModeUI(active);
+  await log('Mode test', active?'Activé':'Désactivé');
+  toast(active?'🧪 Mode test activé — réservations débloquées':'🔴 Mode test désactivé','s');
+};
+function updateTestModeUI(active){
+  const el=document.getElementById('testModeStatus');
+  if(!el)return;
+  el.textContent=active?'ON':'OFF';
+  el.style.background=active?'rgba(45,212,191,0.15)':'rgba(247,97,79,0.12)';
+  el.style.color=active?'var(--teal)':'var(--red)';
+}
+
+// Auto-purge à 18h Tunis
 async function autoPurge(){
   const t=getTunisDate(),h=t.getUTCHours();
-  if(h!==19)return;
+  if(h!==18)return;
   const today=new Date(Date.UTC(t.getUTCFullYear(),t.getUTCMonth(),t.getUTCDate())).toISOString().split('T')[0];
   const lp=await get(ref(db,'settings/lastPurge'));
   if(lp.exists()&&lp.val()===today)return;
