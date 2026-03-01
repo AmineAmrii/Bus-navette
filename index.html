@@ -17,26 +17,142 @@
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100dvh;}
 
 /* ═══ AUTH ═══ */
-.auth-wrap{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;}
-.auth-brand{text-align:center;margin-bottom:28px;}
-.auth-brand .logo-big{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;}
+.auth-wrap{
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:24px 16px;
+  box-sizing:border-box;
+  width:100%;
+  overflow-x:hidden;
+}
+.auth-brand{
+  text-align:center;
+  margin-bottom:28px;
+  width:100%;
+}
+.auth-brand .logo-big{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:1.9rem;
+  display:block;
+}
 .auth-brand .logo-big span{color:var(--accent);}
-.auth-brand p{font-size:0.8rem;color:var(--muted);margin-top:4px;}
-.auth-box{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:26px 22px;width:100%;max-width:380px;}
-.auth-box h2{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:5px;}
-.auth-box .sub{font-size:0.76rem;color:var(--muted);margin-bottom:18px;line-height:1.5;}
-.field{margin-bottom:12px;}
-.field label{display:block;font-size:0.68rem;font-family:'Syne',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:5px;}
-.field input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.93rem;outline:none;transition:border-color 0.2s;}
+.auth-brand p{font-size:0.8rem;color:var(--muted);margin-top:5px;}
+.auth-box{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:28px 24px;
+  width:100%;
+  max-width:400px;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+.auth-box h2{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:1.25rem;
+  margin-bottom:6px;
+  line-height:1.2;
+}
+.auth-box .sub{
+  font-size:0.78rem;
+  color:var(--muted);
+  margin-bottom:22px;
+  line-height:1.6;
+}
+.err{
+  background:rgba(247,97,79,0.1);
+  border:1px solid rgba(247,97,79,0.25);
+  color:var(--red);
+  border-radius:10px;
+  padding:10px 14px;
+  font-size:0.78rem;
+  margin-bottom:16px;
+  display:none;
+  width:100%;
+  box-sizing:border-box;
+}
+.field{
+  display:flex;
+  flex-direction:column;
+  margin-bottom:14px;
+  width:100%;
+}
+.field label{
+  display:block;
+  font-size:0.7rem;
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  color:var(--muted);
+  margin-bottom:7px;
+}
+.field input{
+  width:100%;
+  box-sizing:border-box;
+  background:var(--bg);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  padding:13px 15px;
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:1rem;
+  outline:none;
+  transition:border-color 0.2s;
+  -webkit-appearance:none;
+}
 .field input:focus{border-color:var(--accent);}
 .field input::placeholder{color:var(--muted);}
-.btn-main{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),#6fa8f9);border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:0.93rem;font-weight:700;cursor:pointer;margin-top:6px;box-shadow:0 5px 18px rgba(79,142,247,0.3);transition:transform 0.15s;}
+.btn-main{
+  width:100%;
+  box-sizing:border-box;
+  padding:14px;
+  background:linear-gradient(135deg,var(--accent),#6fa8f9);
+  border:none;
+  border-radius:13px;
+  color:#fff;
+  font-family:'Syne',sans-serif;
+  font-size:0.95rem;
+  font-weight:700;
+  cursor:pointer;
+  margin-top:8px;
+  box-shadow:0 5px 18px rgba(79,142,247,0.3);
+  transition:transform 0.15s;
+  display:block;
+}
 .btn-main:active{transform:scale(0.98);}
-.btn-ghost{width:100%;padding:12px;background:transparent;border:1.5px solid var(--border);border-radius:12px;color:var(--muted);font-family:'Syne',sans-serif;font-size:0.86rem;font-weight:600;cursor:pointer;margin-top:8px;transition:all 0.2s;}
+.btn-ghost{
+  width:100%;
+  box-sizing:border-box;
+  padding:13px;
+  background:transparent;
+  border:1.5px solid var(--border);
+  border-radius:13px;
+  color:var(--muted);
+  font-family:'Syne',sans-serif;
+  font-size:0.88rem;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:10px;
+  transition:all 0.2s;
+  display:block;
+}
 .btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
-.auth-link{text-align:center;margin-top:14px;font-size:0.78rem;color:var(--muted);}
+.auth-link{
+  text-align:center;
+  margin-top:18px;
+  font-size:0.8rem;
+  color:var(--muted);
+  line-height:1.5;
+}
 .auth-link a{color:var(--accent);cursor:pointer;font-weight:600;}
-.err{background:rgba(247,97,79,0.1);border:1px solid rgba(247,97,79,0.25);color:var(--red);border-radius:9px;padding:9px 13px;font-size:0.76rem;margin-bottom:12px;display:none;}
 
 /* ═══ APP ═══ */
 #app{display:none;padding-bottom:48px;}
@@ -924,18 +1040,30 @@ window.manualPurge=async()=>{
 };
 
 // ── AUTO PURGE ──
+// Déclenché à chaque ouverture de l'app
+// Supprime tous les jours PASSÉS (avant aujourd'hui)
 async function autoPurge(){
-  const now=new Date();if(now.getHours()!==19)return;
-  const today=now.toISOString().split('T')[0];
+  const today=new Date().toISOString().split('T')[0];
+  const todayKey=today.replace(/-/g,'_');
+
+  // Vérifier si déjà purgé aujourd'hui
   const lp=await get(ref(db,'settings/lastPurge'));
   if(lp.exists()&&lp.val()===today)return;
+
   const allSnap=await get(ref(db,'reservations'));
-  if(!allSnap.exists())return;
-  const todayKey=today.replace(/-/g,'_');
-  for(const dk of Object.keys(allSnap.val())){if(dk<todayKey)await remove(ref(db,`reservations/${dk}`));}
+  if(!allSnap.exists()){
+    await set(ref(db,'settings/lastPurge'),today);
+    return;
+  }
+
+  let n=0;
+  for(const dk of Object.keys(allSnap.val())){
+    if(dk<todayKey){ await remove(ref(db,`reservations/${dk}`)); n++; }
+  }
   await set(ref(db,'settings/lastPurge'),today);
+  if(n>0) console.log(`Auto-purge: ${n} jour(s) supprimé(s)`);
 }
-autoPurge();
+autoPurge(); // lancé à chaque ouverture
 
 // ── LOG ──
 async function loadLog(){
